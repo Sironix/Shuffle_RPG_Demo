@@ -2,9 +2,9 @@ extends Node2D
 class_name IMonstruo
 
 enum MATCH_TYPES{None,Cross,L,Square}
-onready var destroy_timer: Timer = $Destroy_Timer
+@onready var destroy_timer: Timer = $Destroy_Timer
 
-export(String) var id = "" setget id_set, id_get
+@export var id: String = "": get = id_get, set = id_set
 var damage : int = 0
 var icon
 var matched_h := false
@@ -19,23 +19,19 @@ func id_set(value:String):
 			push_error(str(id," trying to be changed to ", value))
 		else:
 			id = value
-	print(id,"in setter")
 
 func id_get():
-#	print(id ,"in getter")
 	return id
 
 func _init(_GRID_REF=null):
 	GRID_REF = _GRID_REF
 
 func _ready():
-	print(id," in monster")
 	pass # Replace with function body.
 
 func move(target_pos:Vector2=Vector2(0,0)) -> void:
 	var move_tween= create_tween().set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	move_tween.tween_property(self,"position",target_pos,0.5)
-	dim()
 	print(id)
 	if GRID_REF:
 		GRID_REF.emit_signal("player_piece_swap_finished")
@@ -57,7 +53,8 @@ func dim():
 	dim_tween.tween_property(self,"modulate:a",0.3,0.4)
 	dim_tween.tween_property(self,"modulate:a",1,0.2)
 
-
+func _on_destroy_timer_timeout() -> void:
+	queue_free()
 
 
 func match_3():
@@ -81,6 +78,3 @@ func match_8():
 func match_special():
 	pass
 
-
-func _on_Destroy_Timer_timeout() -> void:
-	queue_free()

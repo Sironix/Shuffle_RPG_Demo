@@ -11,11 +11,13 @@ signal match_of_8(placement)
 signal player_piece_swap_finished
 
 #init vars
-export(int) var width
-export(int) var height
-export(int) var x_start = 0
-export(int) var y_start = 0
-export(int) var offset
+@export var width: int
+@export var height: int
+@export var x_start: int = 0
+@export var y_start: int = 0
+@export var offset: int
+
+@onready var collapse_timer: Timer = $CollapseTimer
 
 #posibles pieces currently being used
 var references=[
@@ -27,7 +29,9 @@ var references=[
 ]
 
 #current pieces in the scene
-var pieces := []
+var board := []
+
+var matches_in_board:=[]
 
 #touch variables
 var control_allowed := true
@@ -37,7 +41,9 @@ var piece_selected :=false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	board = create_board_array()
+	spawn_pieces_without_matches()
+	player_piece_swap_finished.connect(when_piece_movement_finished)
 
 func _process(delta: float) -> void:
 	touch_input()
@@ -46,7 +52,7 @@ func _process(delta: float) -> void:
 ####  INIT LOGIC
 ############################################################################################
 
-func create_grid_array() -> Array:
+func create_board_array() -> Array:
 	var array = []
 	for i in width:
 		array.append([])
@@ -54,12 +60,12 @@ func create_grid_array() -> Array:
 			array[i].append(null)
 	return array
 
-func array_to_grid(column:int=0,row:int=0) -> Vector2:
+func board_to_pixel(column:int=0,row:int=0) -> Vector2:
 	var new_x = x_start + offset * column
 	var new_y = y_start - offset * row
 	return Vector2(new_x, new_y)
 
-func grid_to_array(pos:Vector2=Vector2(0,0)) -> Vector2:
+func pixel_to_board(pos:Vector2=Vector2(0,0)) -> Vector2:
 	var column:int = round(pos.x / offset)
 	var row :int = round(pos.y / -offset)
 	var grid_space : Vector2 = Vector2(column,row)
@@ -71,37 +77,38 @@ func is_in_grid(grid_space:Vector2=Vector2(0,0)) -> bool:
 			return true
 	return false
 
-func spawn_pieces() -> void:
+func spawn_pieces_without_matches() -> void:
 	for i in width:
 		for j in height:
 			#choose random piece
 			var rand = randi() % references.size()
-			var piece = references[rand].instance()
+			var piece = references[rand].instantiate()
 			#loop counter to prevent issues
 			var loops = 0
-			while(is_match(i, j, piece.id) == true && loops < 100):
+			while(_is_match(i, j, piece.id) == true && loops < 100):
 				rand = randi() % references.size()
-				piece = references[rand].instance()
+				piece = references[rand].instantiate()
 				loops += 1
 			if loops ==100:
-				print("limit at ",i,j)
+				push_warning(str("limit at ",i,j))
 
 			#instance it
 			add_child(piece)
 			piece._init(self)
-			piece.position= array_to_grid(i,j)
-			pieces[i][j] = piece
+			piece.position= board_to_pixel(i,j)
+			board[i][j] = piece
 
-func is_match(column:int=0,row:int=0,id:String="") -> bool:
+##quick 3 match finder
+func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 	var match_made = false
 	if column > 1:
-		if pieces[column - 1][row] != null && pieces[column - 2][row] != null:
-			if pieces[column - 1][row].id == id && pieces[column -2][row].id == id:
+		if board[column - 1][row] != null && board[column - 2][row] != null:
+			if board[column - 1][row].id == id && board[column -2][row].id == id:
 				## later return the match vectors
 				match_made = true
 	if row > 1:
-		if pieces[column][row - 1] != null && pieces[column][row - 2] != null:
-			if pieces[column][row - 1].id == id && pieces[column][row - 2].id == id:
+		if board[column][row - 1] != null && board[column][row - 2] != null:
+			if board[column][row - 1].id == id && board[column][row - 2].id == id:
 				## later return the match vectors
 				match_made = true
 	return match_made
@@ -134,35 +141,35 @@ func find_all_matches():
 func find_horizontal_match(_pieces_to_match:int=3):
 	var pieces_to_match := _pieces_to_match
 	if pieces_to_match > width:
-		push_error("trying to find too big matches")
+		push_error("trying to find matches bigger than the board.")
 		pieces_to_match= width
 	for i in width-(pieces_to_match-1):
 		for j in height:
 			##early return pattern
-			if pieces[i][j] == null:
+			if board[i][j] == null:
 #				push_warning(str("pieza vacia",i,j))
 				continue
 
 			##piece already matched in a similar way so we skip it.
-			elif pieces[i][j].matched_h == true:
+			elif board[i][j].matched_h == true:
 #				push_warning(str("already matched H ",i,j))
 				continue
 
-#			elif pieces[i + 1][j] == null or pieces[i+2][j]== null:
+#			elif board[i + 1][j] == null or board[i+2][j]== null:
 ##				push_warning(str("piezas a la derecha vacias",i,j))
 #				continue
 
 			##actual logic
 			var matched_pieces = []
 			for num in pieces_to_match:
-				matched_pieces.append(pieces[i+num][j])
+				matched_pieces.append(board[i+num][j])
 			if is_matching(matched_pieces) == false:
 				matched_pieces = []
 
 			else:
 				for piece in matched_pieces:
 					piece.matched_h = true
-					piece.dim()
+					piece.match_animation()
 				match pieces_to_match:
 					3:
 						emit_signal("match_of_3",Vector2(i,j))
@@ -183,34 +190,34 @@ func find_horizontal_match(_pieces_to_match:int=3):
 func find_vertical_match(_pieces_to_match:int=3):
 	var pieces_to_match := _pieces_to_match
 	if pieces_to_match > height:
-		push_error("trying to find too big matches")
+		push_error("trying to find matches bigger than the board.")
 		pieces_to_match= height
 	for i in width:
 		for j in height-(pieces_to_match-1):
 			##early return pattern
-			if pieces[i][j] == null:
+			if board[i][j] == null:
 #				push_warning(str("pieza vacia",i,j))
 				continue
 
 			##piece already matched in a similar way so we skip it.
-			elif pieces[i][j].matched_v == true:
+			elif board[i][j].matched_v == true:
 #				push_warning(str("already matched H ",i,j))
 				continue
 
-#			elif pieces[i + 1][j] == null or pieces[i+2][j]== null:
+#			elif board[i + 1][j] == null or board[i+2][j]== null:
 ##				push_warning(str("piezas a la derecha vacias",i,j))
 #				continue
 
 			##actual logic
 			var matched_pieces = []
 			for num in pieces_to_match:
-				matched_pieces.append(pieces[i][j+num])
+				matched_pieces.append(board[i][j+num])
 			if is_matching(matched_pieces) == false:
 				matched_pieces = []
 			else:
 				for piece in matched_pieces:
 					piece.matched_v = true
-					piece.dim()
+					piece.match_animation()
 				match pieces_to_match:
 					3:
 						emit_signal("match_of_3",Vector2(i,j))
@@ -232,13 +239,26 @@ func is_matching(array_pieces:Array=[]):
 	var pieces_to_match = array_pieces
 	if pieces_to_match.size()== 0:
 		return false
-	print(pieces_to_match[0]," also ",pieces_to_match[0].id)
 	var id = pieces_to_match[0].id
 	var matching =true
 	for piece in pieces_to_match.size():
+		if pieces_to_match[piece] == null:
+			return false
 		if pieces_to_match[piece].id != id:
 			matching = false
 	return matching
+
+func collapse_columns():
+	for row in width:
+		for column in height:
+			if board[row][column] == null:
+				for j in range(column +1 , height):
+					if board[row][j] != null:
+						board[row][j].move(board_to_pixel(row,column))
+						board[row][column]= board[row][j]
+						board[row][j]= null
+						break
+	find_all_matches()
 
 ####
 #mandar matches a un array o diccionario para guardarlos y computarlos.
@@ -247,6 +267,7 @@ func is_matching(array_pieces:Array=[]):
 #agregar variable "matched_v" y "matched_h" para hacer que se saltee a esa pieza si ya hizo un match
 #de ese tipo (tipo ya hizo un match 4 horizontal, entonces no se puede hacer otro match 3 horizontal
 #con esa pieza.
+
 
 
 ################################################################################################
@@ -258,22 +279,19 @@ func touch_input() -> void:
 
 		if Input.is_action_just_pressed("ui_touch"):
 			var input_start_pos = get_local_mouse_position()
-			var grid_start_pos = grid_to_array(input_start_pos)
+			var grid_start_pos = pixel_to_board(input_start_pos)
 			if  is_in_grid(grid_start_pos)== true:
 				touch_start= grid_start_pos
 				piece_selected = true
-				print(touch_start)
 
 		if Input.is_action_just_released("ui_touch") && piece_selected:
 			var input_end_pos = get_local_mouse_position()
-			var grid_end_pos = grid_to_array(input_end_pos)
+			var grid_end_pos = pixel_to_board(input_end_pos)
 			if  is_in_grid(grid_end_pos)== true and touch_start != grid_end_pos:
 				touch_release= grid_end_pos
 				##start the swapping
 				swap_pieces(touch_start,touch_release)
 				piece_selected = false
-				print(touch_start,grid_end_pos)
-				print(touch_release)
 			else:
 				piece_selected = false
 				touch_release = Vector2(-1,-2)
@@ -281,18 +299,32 @@ func touch_input() -> void:
 
 func swap_pieces(piece_1, piece_2) -> void:
 	control_allowed = false
-	var first_piece = pieces[piece_1.x][piece_1.y]
-	var second_piece = pieces[piece_2.x][piece_2.y]
-	print(first_piece)
-	var first_pos = first_piece.position
-	var second_pos = second_piece.position
-	pieces[piece_1.x][piece_1.y]= second_piece
-	pieces[piece_2.x][piece_2.y]= first_piece
+	var first_piece = board[piece_1.x][piece_1.y]
+	var second_piece = board[piece_2.x][piece_2.y]
+	var first_pos
+	var second_pos
+	if first_piece == null:
+		return
+
+	first_pos = first_piece.position
+	if second_piece == null:
+		second_pos= board_to_pixel(piece_2.x,piece_2.y)
+	else:
+		second_pos = second_piece.position
+		second_piece.move(first_pos)
+
+	board[piece_1.x][piece_1.y]= second_piece
+	board[piece_2.x][piece_2.y]= first_piece
 	first_piece.move(second_pos)
-	second_piece.move(first_pos)
 	### DEBUG
 	find_all_matches()
 
 func when_piece_movement_finished():
 	if not control_allowed:
 		control_allowed = true
+	collapse_timer.start()
+
+
+
+func _on_collapse_timer_timeout() -> void:
+	collapse_columns()

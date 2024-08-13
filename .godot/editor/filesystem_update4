@@ -1,3 +1,5 @@
-res://Scenes/game.tscn
-res://Scenes/i_piece.tscn
+res://default_env.tres
+res://Scenes/MainGame.tscn
 res://Scenes/Grid.gd
+res://Scenes/IMonstruo.gd
+res://Scenes/IMonstruo.tscn

@@ -1,88 +1,90 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://b62igu6gabqd6"]
 
-[ext_resource path="res://Scenes/Grid.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://Scenes/Grid.gd" id="1"]
 
-[sub_resource type="Gradient" id=1]
+[sub_resource type="Gradient" id="1"]
 interpolation_mode = 2
-offsets = PoolRealArray( 0.333333, 0.654321, 1 )
-colors = PoolColorArray( 0.105469, 0.0894012, 0.0894012, 1, 0.261719, 0.261719, 0.261719, 1, 1, 1, 1, 1 )
+offsets = PackedFloat32Array(0.333333, 0.654321, 1)
+colors = PackedColorArray(0.105469, 0.0894012, 0.0894012, 1, 0.261719, 0.261719, 0.261719, 1, 1, 1, 1, 1)
 
-[sub_resource type="GradientTexture2D" id=2]
-flags = 3
-gradient = SubResource( 1 )
-fill_from = Vector2( 0.5, 0.5 )
-fill_to = Vector2( 0, 0 )
+[sub_resource type="GradientTexture2D" id="2"]
+gradient = SubResource("1")
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0, 0)
 
 [node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Control2" type="Control" parent="VBoxContainer"]
-margin_right = 576.0
-margin_bottom = 243.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Control" type="Control" parent="VBoxContainer"]
-margin_top = 247.0
-margin_right = 576.0
-margin_bottom = 777.0
-rect_min_size = Vector2( 530, 530 )
+custom_minimum_size = Vector2(530, 530)
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Control" type="Control" parent="VBoxContainer/Control"]
+anchors_preset = 0
 anchor_top = 1.0
 anchor_bottom = 1.0
-margin_right = 576.0
+offset_right = 576.0
 size_flags_horizontal = 5
 size_flags_vertical = 5
 
 [node name="Grid" type="Node2D" parent="VBoxContainer/Control/Control"]
-position = Vector2( 64, -40 )
-script = ExtResource( 1 )
+position = Vector2(64, -40)
+script = ExtResource("1")
 width = 8
 height = 8
 offset = 64
 
 [node name="ColorRect" type="ColorRect" parent="VBoxContainer/Control/Control/Grid"]
-margin_left = -42.0
-margin_top = -488.0
-margin_right = 488.0
-margin_bottom = 42.0
-rect_min_size = Vector2( 530, 530 )
-color = Color( 0.239216, 0.239216, 0.239216, 1 )
+custom_minimum_size = Vector2(530, 530)
+offset_left = -42.0
+offset_top = -488.0
+offset_right = 488.0
+offset_bottom = 42.0
+color = Color(0.239216, 0.239216, 0.239216, 1)
+
+[node name="CollapseTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+one_shot = true
 
 [node name="Control3" type="Control" parent="VBoxContainer"]
-margin_top = 781.0
-margin_right = 576.0
-margin_bottom = 1024.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Control3"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Control" type="Control" parent="VBoxContainer/Control3/VBoxContainer"]
-margin_right = 576.0
-margin_bottom = 47.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.25
 
 [node name="Control2" type="Control" parent="VBoxContainer/Control3/VBoxContainer"]
-margin_top = 51.0
-margin_right = 576.0
-margin_bottom = 243.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control3/VBoxContainer/Control2"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-texture = SubResource( 2 )
-expand = true
+texture = SubResource("2")
+expand_mode = 1
 stretch_mode = 2
+
+[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/CollapseTimer" to="VBoxContainer/Control/Control/Grid" method="_on_collapse_timer_timeout"]
