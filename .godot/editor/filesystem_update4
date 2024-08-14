@@ -1,5 +1,4 @@
 res://default_env.tres
 res://Scenes/MainGame.tscn
 res://Scenes/Grid.gd
-res://Scenes/IMonstruo.gd
 res://Scenes/IMonstruo.tscn

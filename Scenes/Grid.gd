@@ -18,6 +18,7 @@ signal player_piece_swap_finished
 @export var offset: int
 
 @onready var collapse_timer: Timer = $CollapseTimer
+@onready var refill_timer: Timer = $RefillTimer
 
 #posibles pieces currently being used
 var references=[
@@ -136,7 +137,7 @@ func find_all_matches():
 
 	find_horizontal_match(3)
 	find_vertical_match(3)
-
+	collapse_timer.start()
 
 func find_horizontal_match(_pieces_to_match:int=3):
 	var pieces_to_match := _pieces_to_match
@@ -165,26 +166,26 @@ func find_horizontal_match(_pieces_to_match:int=3):
 				matched_pieces.append(board[i+num][j])
 			if is_matching(matched_pieces) == false:
 				matched_pieces = []
+				continue
 
-			else:
-				for piece in matched_pieces:
-					piece.matched_h = true
-					piece.match_animation()
-				match pieces_to_match:
-					3:
-						emit_signal("match_of_3",Vector2(i,j))
-					4:
-						emit_signal("match_of_4",Vector2(i,j))
-					5:
-						emit_signal("match_of_5",Vector2(i,j))
-					6:
-						emit_signal("match_of_6",Vector2(i,j))
-					7:
-						emit_signal("match_of_7",Vector2(i,j))
-					8:
-						emit_signal("match_of_8",Vector2(i,j))
+			for piece in matched_pieces:
+				piece.matched_h = true
+				piece.match_animation()
+			match pieces_to_match:
+				3:
+					emit_signal("match_of_3",Vector2(i,j))
+				4:
+					emit_signal("match_of_4",Vector2(i,j))
+				5:
+					emit_signal("match_of_5",Vector2(i,j))
+				6:
+					emit_signal("match_of_6",Vector2(i,j))
+				7:
+					emit_signal("match_of_7",Vector2(i,j))
+				8:
+					emit_signal("match_of_8",Vector2(i,j))
 
-				print("H match of ",pieces_to_match," at ",i,j)
+			print("H match of ",pieces_to_match," at ",i,j)
 
 
 func find_vertical_match(_pieces_to_match:int=3):
@@ -214,24 +215,25 @@ func find_vertical_match(_pieces_to_match:int=3):
 				matched_pieces.append(board[i][j+num])
 			if is_matching(matched_pieces) == false:
 				matched_pieces = []
-			else:
-				for piece in matched_pieces:
-					piece.matched_v = true
-					piece.match_animation()
-				match pieces_to_match:
-					3:
-						emit_signal("match_of_3",Vector2(i,j))
-					4:
-						emit_signal("match_of_4",Vector2(i,j))
-					5:
-						emit_signal("match_of_5",Vector2(i,j))
-					6:
-						emit_signal("match_of_6",Vector2(i,j))
-					7:
-						emit_signal("match_of_7",Vector2(i,j))
-					8:
-						emit_signal("match_of_8",Vector2(i,j))
-				print("V match of ",pieces_to_match," at ",i,j)
+				continue
+
+			for piece in matched_pieces:
+				piece.matched_v = true
+				piece.match_animation()
+			match pieces_to_match:
+				3:
+					emit_signal("match_of_3",Vector2(i,j))
+				4:
+					emit_signal("match_of_4",Vector2(i,j))
+				5:
+					emit_signal("match_of_5",Vector2(i,j))
+				6:
+					emit_signal("match_of_6",Vector2(i,j))
+				7:
+					emit_signal("match_of_7",Vector2(i,j))
+				8:
+					emit_signal("match_of_8",Vector2(i,j))
+			print("V match of ",pieces_to_match," at ",i,j)
 
 
 ###checks if given array of pieces all have the same id
@@ -251,22 +253,39 @@ func is_matching(array_pieces:Array=[]):
 func collapse_columns():
 	for row in width:
 		for column in height:
-			if board[row][column] == null:
-				for j in range(column +1 , height):
-					if board[row][j] != null:
-						board[row][j].move(board_to_pixel(row,column))
-						board[row][column]= board[row][j]
-						board[row][j]= null
-						break
+			if board[row][column] != null:
+				#skips the current for cycle
+				continue
+			#finds the first non empty slot in the column down to up.
+			for j in range(column +1 , height):
+				if board[row][j] == null:
+					#same
+					continue
+				board[row][j].move(board_to_pixel(row,column))
+				board[row][column]= board[row][j]
+				board[row][j]= null
+				#once the first empty slot is dealed with, the loop breaks.
+				break
+	refill_timer.start()
+
+func refill_board():
+	var y_offset :int = 2
+	for row in width:
+		for column in height:
+			if board[row][column] !=null:
+				continue
+			var rand = randi() % references.size()
+			var piece :IMonstruo= references[rand].instantiate()
+			add_child(piece)
+			piece._init(self)
+			piece.position= board_to_pixel(row,column + y_offset)
+			piece.move(board_to_pixel(row,column))
+			board[row][column] = piece
 	find_all_matches()
 
-####
+
+#TODO
 #mandar matches a un array o diccionario para guardarlos y computarlos.
-#hacer los matches hacia la derecha y hacia abajo en vez de empezar desde el centro.
-#para agilizar.
-#agregar variable "matched_v" y "matched_h" para hacer que se saltee a esa pieza si ya hizo un match
-#de ese tipo (tipo ya hizo un match 4 horizontal, entonces no se puede hacer otro match 3 horizontal
-#con esa pieza.
 
 
 
@@ -275,26 +294,29 @@ func collapse_columns():
 ################################################################################################
 
 func touch_input() -> void:
-	if control_allowed == true:
+	if control_allowed == false:
+		return
 
-		if Input.is_action_just_pressed("ui_touch"):
-			var input_start_pos = get_local_mouse_position()
-			var grid_start_pos = pixel_to_board(input_start_pos)
-			if  is_in_grid(grid_start_pos)== true:
-				touch_start= grid_start_pos
-				piece_selected = true
+	if Input.is_action_just_pressed("ui_touch"):
+		var input_start_pos = get_local_mouse_position()
+		var grid_start_pos = pixel_to_board(input_start_pos)
+		if  is_in_grid(grid_start_pos) == false:
+			return
+		touch_start= grid_start_pos
+		piece_selected = true
 
-		if Input.is_action_just_released("ui_touch") && piece_selected:
-			var input_end_pos = get_local_mouse_position()
-			var grid_end_pos = pixel_to_board(input_end_pos)
-			if  is_in_grid(grid_end_pos)== true and touch_start != grid_end_pos:
-				touch_release= grid_end_pos
-				##start the swapping
-				swap_pieces(touch_start,touch_release)
-				piece_selected = false
-			else:
-				piece_selected = false
-				touch_release = Vector2(-1,-2)
+	if Input.is_action_just_released("ui_touch") && piece_selected:
+		var input_end_pos = get_local_mouse_position()
+		var grid_end_pos = pixel_to_board(input_end_pos)
+		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos:
+			piece_selected = false
+			touch_release = Vector2(-1,-2)
+		touch_release= grid_end_pos
+		##start the swapping
+		swap_pieces(touch_start,touch_release)
+		piece_selected = false
+
+
 
 
 func swap_pieces(piece_1, piece_2) -> void:
@@ -319,12 +341,15 @@ func swap_pieces(piece_1, piece_2) -> void:
 	### DEBUG
 	find_all_matches()
 
+
 func when_piece_movement_finished():
 	if not control_allowed:
 		control_allowed = true
-	collapse_timer.start()
-
 
 
 func _on_collapse_timer_timeout() -> void:
 	collapse_columns()
+
+
+func _on_refill_timer_timeout() -> void:
+	refill_board()
