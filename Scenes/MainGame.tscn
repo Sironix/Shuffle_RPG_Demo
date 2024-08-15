@@ -59,10 +59,15 @@ offset_bottom = 42.0
 color = Color(0.239216, 0.239216, 0.239216, 1)
 
 [node name="CollapseTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+wait_time = 0.55
 one_shot = true
 
 [node name="RefillTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
-wait_time = 0.55
+wait_time = 0.05
+one_shot = true
+
+[node name="MatchFinderTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+wait_time = 0.61
 one_shot = true
 
 [node name="Control3" type="Control" parent="VBoxContainer"]
@@ -95,3 +100,4 @@ stretch_mode = 2
 
 [connection signal="timeout" from="VBoxContainer/Control/Control/Grid/CollapseTimer" to="VBoxContainer/Control/Control/Grid" method="_on_collapse_timer_timeout"]
 [connection signal="timeout" from="VBoxContainer/Control/Control/Grid/RefillTimer" to="VBoxContainer/Control/Control/Grid" method="_on_refill_timer_timeout"]
+[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/MatchFinderTimer" to="VBoxContainer/Control/Control/Grid" method="_on_match_finder_timer_timeout"]

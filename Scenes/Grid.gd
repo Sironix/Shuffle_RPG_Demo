@@ -10,6 +10,9 @@ signal match_of_8(placement)
 
 signal player_piece_swap_finished
 
+#State Machine
+enum GRID_STATE {wait,move}
+var state:GRID_STATE=GRID_STATE.move
 #init vars
 @export var width: int
 @export var height: int
@@ -19,6 +22,7 @@ signal player_piece_swap_finished
 
 @onready var collapse_timer: Timer = $CollapseTimer
 @onready var refill_timer: Timer = $RefillTimer
+@onready var match_finder_timer: Timer = $MatchFinderTimer
 
 #posibles pieces currently being used
 var references=[
@@ -45,13 +49,15 @@ func _ready():
 	board = create_board_array()
 	spawn_pieces_without_matches()
 	player_piece_swap_finished.connect(when_piece_movement_finished)
+	state =GRID_STATE.move
 
 func _process(delta: float) -> void:
-	touch_input()
+	if state== GRID_STATE.move:
+		touch_input()
 
-############################################################################################
+####################################################################################################
 ####  INIT LOGIC
-############################################################################################
+####################################################################################################
 
 func create_board_array() -> Array:
 	var array = []
@@ -114,33 +120,47 @@ func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 				match_made = true
 	return match_made
 
-##############################################################################################
+####################################################################################################
 #### MATCHING LOGIC
-##############################################################################################
+####################################################################################################
 
 ###find different types of matches
 func find_all_matches():
-	find_horizontal_match(8)
-	find_vertical_match(8)
+	collapse_timer.stop()
+	var match_happened:=false
+	if find_horizontal_match(8):
+		match_happened=true
+	if find_vertical_match(8):
+		match_happened=true
+	if find_horizontal_match(7):
+		match_happened=true
+	if find_vertical_match(7):
+		match_happened=true
+	if find_horizontal_match(6):
+		match_happened=true
+	if find_vertical_match(6):
+		match_happened=true
+	if find_horizontal_match(5):
+		match_happened=true
+	if find_vertical_match(5):
+		match_happened=true
+	if find_horizontal_match(4):
+		match_happened=true
+	if find_vertical_match(4):
+		match_happened=true
+	if find_horizontal_match(3):
+		match_happened=true
+	if find_vertical_match(3):
+		match_happened=true
 
-	find_horizontal_match(7)
-	find_vertical_match(7)
+	if match_happened:
+		collapse_timer.start()
+	else:
+		state = GRID_STATE.move
 
-	find_horizontal_match(6)
-	find_vertical_match(6)
-
-	find_horizontal_match(5)
-	find_vertical_match(5)
-
-	find_horizontal_match(4)
-	find_vertical_match(4)
-
-	find_horizontal_match(3)
-	find_vertical_match(3)
-	collapse_timer.start()
-
-func find_horizontal_match(_pieces_to_match:int=3):
+func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 	var pieces_to_match := _pieces_to_match
+	var match_happened := false
 	if pieces_to_match > width:
 		push_error("trying to find matches bigger than the board.")
 		pieces_to_match= width
@@ -164,16 +184,21 @@ func find_horizontal_match(_pieces_to_match:int=3):
 			var matched_pieces = []
 			for num in pieces_to_match:
 				matched_pieces.append(board[i+num][j])
-			if is_matching(matched_pieces) == false:
+			var match_results :Dictionary= is_matching(matched_pieces)
+			if match_results.matched == false:
 				matched_pieces = []
 				continue
-
+			var middle_piece :int= matched_pieces.size()/2
+			print("Middle_piece indice ", middle_piece)
+			var center_position :Vector2= pixel_to_board(matched_pieces[middle_piece].position)
+			print("center at ",center_position)
+			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_h = true
 				piece.match_animation()
 			match pieces_to_match:
 				3:
-					emit_signal("match_of_3",Vector2(i,j))
+					emit_signal("match_of_3",center_position)
 				4:
 					emit_signal("match_of_4",Vector2(i,j))
 				5:
@@ -185,11 +210,12 @@ func find_horizontal_match(_pieces_to_match:int=3):
 				8:
 					emit_signal("match_of_8",Vector2(i,j))
 
-			print("H match of ",pieces_to_match," at ",i,j)
+			print(match_results.id, " H match of ", pieces_to_match, " at ", center_position.x, " ", center_position.y)
+	return match_happened
 
-
-func find_vertical_match(_pieces_to_match:int=3):
+func find_vertical_match(_pieces_to_match:int=3) -> bool:
 	var pieces_to_match := _pieces_to_match
+	var match_happened := false
 	if pieces_to_match > height:
 		push_error("trying to find matches bigger than the board.")
 		pieces_to_match= height
@@ -213,10 +239,12 @@ func find_vertical_match(_pieces_to_match:int=3):
 			var matched_pieces = []
 			for num in pieces_to_match:
 				matched_pieces.append(board[i][j+num])
-			if is_matching(matched_pieces) == false:
+			var match_results :Dictionary= is_matching(matched_pieces)
+			if match_results.matched == false:
 				matched_pieces = []
 				continue
 
+			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_v = true
 				piece.match_animation()
@@ -233,8 +261,8 @@ func find_vertical_match(_pieces_to_match:int=3):
 					emit_signal("match_of_7",Vector2(i,j))
 				8:
 					emit_signal("match_of_8",Vector2(i,j))
-			print("V match of ",pieces_to_match," at ",i,j)
-
+			print(match_results.id, " V match of ", pieces_to_match, " at ", i, " ", j)
+	return match_happened
 
 ###checks if given array of pieces all have the same id
 func is_matching(array_pieces:Array=[]):
@@ -248,32 +276,46 @@ func is_matching(array_pieces:Array=[]):
 			return false
 		if pieces_to_match[piece].id != id:
 			matching = false
-	return matching
+	return {"matched":matching,"id":id}
 
 func collapse_columns():
+	refill_timer.stop()
+	var activate_timer = false
 	for row in width:
 		for column in height:
 			if board[row][column] != null:
 				#skips the current for cycle
 				continue
+			if not activate_timer:
+				activate_timer = true
 			#finds the first non empty slot in the column down to up.
 			for j in range(column +1 , height):
 				if board[row][j] == null:
 					#same
 					continue
+
 				board[row][j].move(board_to_pixel(row,column))
 				board[row][column]= board[row][j]
 				board[row][j]= null
+				await get_tree().create_timer(0.01).timeout
 				#once the first empty slot is dealed with, the loop breaks.
 				break
-	refill_timer.start()
+		await get_tree().create_timer(0.02).timeout
+	if activate_timer:
+		refill_timer.start()
+	else:
+		state = GRID_STATE.move
 
 func refill_board():
+	match_finder_timer.stop()
+	var activate_timer = false
 	var y_offset :int = 2
 	for row in width:
 		for column in height:
 			if board[row][column] !=null:
 				continue
+			if not activate_timer:
+				activate_timer = true
 			var rand = randi() % references.size()
 			var piece :IMonstruo= references[rand].instantiate()
 			add_child(piece)
@@ -281,7 +323,12 @@ func refill_board():
 			piece.position= board_to_pixel(row,column + y_offset)
 			piece.move(board_to_pixel(row,column))
 			board[row][column] = piece
-	find_all_matches()
+			await get_tree().create_timer(0.1).timeout
+		await get_tree().create_timer(0.1).timeout
+	if activate_timer:
+		match_finder_timer.start()
+	else:
+		state = GRID_STATE.move
 
 
 #TODO
@@ -289,9 +336,9 @@ func refill_board():
 
 
 
-################################################################################################
+####################################################################################################
 #######    INPUT
-################################################################################################
+####################################################################################################
 
 func touch_input() -> void:
 	if control_allowed == false:
@@ -311,6 +358,7 @@ func touch_input() -> void:
 		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos:
 			piece_selected = false
 			touch_release = Vector2(-1,-2)
+			return
 		touch_release= grid_end_pos
 		##start the swapping
 		swap_pieces(touch_start,touch_release)
@@ -320,6 +368,7 @@ func touch_input() -> void:
 
 
 func swap_pieces(piece_1, piece_2) -> void:
+	state = GRID_STATE.wait
 	control_allowed = false
 	var first_piece = board[piece_1.x][piece_1.y]
 	var second_piece = board[piece_2.x][piece_2.y]
@@ -339,17 +388,28 @@ func swap_pieces(piece_1, piece_2) -> void:
 	board[piece_2.x][piece_2.y]= first_piece
 	first_piece.move(second_pos)
 	### DEBUG
-	find_all_matches()
+	match_finder_timer.start()
 
 
 func when_piece_movement_finished():
 	if not control_allowed:
 		control_allowed = true
 
+####################################################################################################
+###TIMERS
+####################################################################################################
 
 func _on_collapse_timer_timeout() -> void:
+	print("Collapse Timer Timeout")
 	collapse_columns()
 
 
 func _on_refill_timer_timeout() -> void:
+	print("Refill Timer Timeout")
 	refill_board()
+
+
+func _on_match_finder_timer_timeout() -> void:
+	print("Match Finder Timer Timeout")
+	find_all_matches()
+
