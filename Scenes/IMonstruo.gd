@@ -32,10 +32,10 @@ func _ready():
 func move(target_pos:Vector2=Vector2(0,0)) -> void:
 	var move_tween= create_tween().set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	move_tween.tween_property(self,"position",target_pos,0.5)
-	print(id)
+	#print(id)
 	if GRID_REF:
 		GRID_REF.emit_signal("player_piece_swap_finished")
-		print("finished moving")
+		#print("finished moving")
 
 func inflict_damage():
 	print(damage)
