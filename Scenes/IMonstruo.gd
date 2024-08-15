@@ -29,6 +29,10 @@ func _init(_GRID_REF=null):
 func _ready():
 	pass # Replace with function body.
 
+#I should make this an interface. like "Imove"
+#have the move version (triggers when you pick this piece and move it somewhere
+#have the displace version (triggers when this piece is the 2nd piece in a piece swap input
+#have the collapse version (triggers with the collapse columns function.
 func move(target_pos:Vector2=Vector2(0,0)) -> void:
 	var move_tween= create_tween().set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	move_tween.tween_property(self,"position",target_pos,0.5)
