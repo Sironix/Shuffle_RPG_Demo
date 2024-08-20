@@ -1,0 +1,4 @@
+
+
+Thanks to Herbherth for the GDScript Quality Of Life Addon
+and  Dugramen for the Globalize Scripts Addon.

@@ -25,6 +25,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_width"
 window/handheld/orientation="portrait"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ScriptEditorQoL/plugin.cfg", "res://addons/globalize-plugins/plugin.cfg")
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
