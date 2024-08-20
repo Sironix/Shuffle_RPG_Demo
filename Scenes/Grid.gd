@@ -33,6 +33,9 @@ var references=[
 	preload("res://Scenes/Monstruos/Yellow Piece.tscn")
 ]
 
+#obstacle stuff
+@export var empty_spaces:Array[Vector2]
+
 #current pieces in the scene
 var board := []
 
@@ -87,6 +90,10 @@ func is_in_grid(grid_space:Vector2=Vector2(0,0)) -> bool:
 func spawn_pieces_without_matches() -> void:
 	for i in width:
 		for j in height:
+			#if it is an obstacle, skip the current for loop
+			if _is_obstacle(Vector2(i,j)):
+				continue
+
 			#choose random piece
 			var rand = randi() % references.size()
 			var piece = references[rand].instantiate()
@@ -105,7 +112,7 @@ func spawn_pieces_without_matches() -> void:
 			piece.position= board_to_pixel(i,j)
 			board[i][j] = piece
 
-##quick 3 match finder
+##quick 3 match finder for the spawning funcion
 func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 	var match_made = false
 	if column > 1:
@@ -119,6 +126,16 @@ func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 				## later return the match vectors
 				match_made = true
 	return match_made
+
+
+
+func _is_obstacle(place:Vector2=Vector2(0,0)) -> bool:
+	for index in empty_spaces.size():
+		if empty_spaces[index] == place:
+			return true
+	return false
+
+
 
 ####################################################################################################
 #### MATCHING LOGIC
@@ -168,6 +185,7 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 		for j in height:
 			##early return pattern
 			if board[i][j] == null:
+
 #				push_warning(str("pieza vacia",i,j))
 				continue
 
@@ -176,13 +194,18 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 #				push_warning(str("already matched H ",i,j))
 				continue
 
-#			elif board[i + 1][j] == null or board[i+2][j]== null:
-##				push_warning(str("piezas a la derecha vacias",i,j))
-#				continue
+			var null_pieces_in_match: bool = false
+			for k in pieces_to_match:
+				if board[i+k][j] == null:
+					null_pieces_in_match = true
+			if null_pieces_in_match:
+				continue
 
 			##actual logic
 			var matched_pieces = []
 			for num in pieces_to_match:
+				if board[i+num] ==null:
+					return match_happened
 				matched_pieces.append(board[i+num][j])
 			var match_results :Dictionary= is_matching(matched_pieces)
 			if match_results.matched == false:
@@ -231,9 +254,12 @@ func find_vertical_match(_pieces_to_match:int=3) -> bool:
 #				push_warning(str("already matched H ",i,j))
 				continue
 
-#			elif board[i + 1][j] == null or board[i+2][j]== null:
-##				push_warning(str("piezas a la derecha vacias",i,j))
-#				continue
+			var null_pieces_in_match: bool = false
+			for k in pieces_to_match:
+				if board[i][j+k] == null:
+					null_pieces_in_match = true
+			if null_pieces_in_match:
+				continue
 
 			##actual logic
 			var matched_pieces = []
@@ -286,6 +312,10 @@ func collapse_columns():
 			if board[row][column] != null:
 				#skips the current for cycle
 				continue
+			#if it is an obstacle, skip the current for loop
+			if _is_obstacle(Vector2(row,column)):
+				continue
+
 			if not activate_timer:
 				activate_timer = true
 			#finds the first non empty slot in the column down to up.
@@ -314,6 +344,11 @@ func refill_board():
 		for column in height:
 			if board[row][column] !=null:
 				continue
+
+			#if it is an obstacle, skip the current for loop
+			if _is_obstacle(Vector2(row,column)):
+				continue
+
 			if not activate_timer:
 				activate_timer = true
 			var rand = randi() % references.size()
