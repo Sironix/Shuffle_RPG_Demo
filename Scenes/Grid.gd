@@ -49,6 +49,10 @@ var piece_selected :=false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	await get_tree().create_timer(5).timeout
+	PosAdapter.x_start =x_start
+	PosAdapter.y_start =y_start
+	PosAdapter.offset = offset
 	board = create_board_array()
 	spawn_pieces_without_matches()
 	player_piece_swap_finished.connect(when_piece_movement_finished)
@@ -69,17 +73,6 @@ func create_board_array() -> Array:
 		for j in height:
 			array[i].append(null)
 	return array
-
-func board_to_pixel(column:int=0,row:int=0) -> Vector2:
-	var new_x = x_start + offset * column
-	var new_y = y_start - offset * row
-	return Vector2(new_x, new_y)
-
-func pixel_to_board(pos:Vector2=Vector2(0,0)) -> Vector2:
-	var column:int = round(pos.x / offset)
-	var row :int = round(pos.y / -offset)
-	var grid_space : Vector2 = Vector2(column,row)
-	return grid_space
 
 func is_in_grid(grid_space:Vector2=Vector2(0,0)) -> bool:
 	if grid_space.x >=0 and grid_space.x < width:
@@ -109,8 +102,10 @@ func spawn_pieces_without_matches() -> void:
 			#instance it
 			add_child(piece)
 			piece._init(self)
-			piece.position= board_to_pixel(i,j)
+			piece.spawn(PosAdapter.board_to_pixel(i,j))
 			board[i][j] = piece
+			await get_tree().create_timer(0.1).timeout
+
 
 ##quick 3 match finder for the spawning funcion
 func _is_match(column:int=0,row:int=0,id:String="") -> bool:
@@ -213,7 +208,7 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 				continue
 			var middle_piece :int= matched_pieces.size()/2
 			print("Middle_piece indice ", middle_piece)
-			var center_position :Vector2= pixel_to_board(matched_pieces[middle_piece].position)
+			var center_position :Vector2= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
 			print("center at ",center_position)
 			match_happened = true
 			for piece in matched_pieces:
@@ -324,7 +319,7 @@ func collapse_columns():
 					#same
 					continue
 
-				board[row][j].move(board_to_pixel(row,column))
+				board[row][j].collapse(PosAdapter.board_to_pixel(row,column))
 				board[row][column]= board[row][j]
 				board[row][j]= null
 				await get_tree().create_timer(0.01).timeout
@@ -355,8 +350,7 @@ func refill_board():
 			var piece :IMonstruo= references[rand].instantiate()
 			add_child(piece)
 			piece._init(self)
-			piece.position= board_to_pixel(row,column + y_offset)
-			piece.move(board_to_pixel(row,column))
+			piece.spawn(PosAdapter.board_to_pixel(row,column))
 			board[row][column] = piece
 			await get_tree().create_timer(0.1).timeout
 		await get_tree().create_timer(0.1).timeout
@@ -381,16 +375,18 @@ func touch_input() -> void:
 
 	if Input.is_action_just_pressed("ui_touch"):
 		var input_start_pos = get_local_mouse_position()
-		var grid_start_pos = pixel_to_board(input_start_pos)
+		var grid_start_pos = PosAdapter.pixel_to_board(input_start_pos)
 		if  is_in_grid(grid_start_pos) == false:
+			return
+		if _is_obstacle(grid_start_pos):
 			return
 		touch_start= grid_start_pos
 		piece_selected = true
 
 	if Input.is_action_just_released("ui_touch") && piece_selected:
 		var input_end_pos = get_local_mouse_position()
-		var grid_end_pos = pixel_to_board(input_end_pos)
-		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos:
+		var grid_end_pos = PosAdapter.pixel_to_board(input_end_pos)
+		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos or _is_obstacle(grid_end_pos):
 			piece_selected = false
 			touch_release = Vector2(-1,-2)
 			return
@@ -414,10 +410,10 @@ func swap_pieces(piece_1, piece_2) -> void:
 
 	first_pos = first_piece.position
 	if second_piece == null:
-		second_pos= board_to_pixel(piece_2.x,piece_2.y)
+		second_pos= PosAdapter.board_to_pixel(piece_2.x,piece_2.y)
 	else:
 		second_pos = second_piece.position
-		second_piece.move(first_pos)
+		second_piece.displace(first_pos)
 
 	board[piece_1.x][piece_1.y]= second_piece
 	board[piece_2.x][piece_2.y]= first_piece

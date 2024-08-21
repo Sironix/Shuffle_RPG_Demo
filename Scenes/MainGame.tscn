@@ -49,7 +49,7 @@ script = ExtResource("1")
 width = 8
 height = 8
 offset = 64
-empty_spaces = Array[Vector2i]([Vector2i(0, 0), Vector2i(7, 0), Vector2i(0, 7), Vector2i(7, 7), Vector2i(3, 3), Vector2i(3, 4), Vector2i(4, 3), Vector2i(4, 4)])
+empty_spaces = Array[Vector2]([Vector2(0, 0), Vector2(7, 0), Vector2(0, 7), Vector2(7, 7), Vector2(3, 3), Vector2(3, 4), Vector2(4, 3), Vector2(4, 4)])
 
 [node name="ColorRect" type="ColorRect" parent="VBoxContainer/Control/Control/Grid"]
 custom_minimum_size = Vector2(530, 530)
@@ -60,7 +60,6 @@ offset_bottom = 42.0
 color = Color(0.239216, 0.239216, 0.239216, 1)
 
 [node name="CollapseTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
-wait_time = 0.55
 one_shot = true
 
 [node name="RefillTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
@@ -68,7 +67,7 @@ wait_time = 0.05
 one_shot = true
 
 [node name="MatchFinderTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
-wait_time = 0.61
+wait_time = 0.55
 one_shot = true
 
 [node name="Control3" type="Control" parent="VBoxContainer"]
