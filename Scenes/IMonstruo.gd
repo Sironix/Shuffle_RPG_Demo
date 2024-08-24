@@ -1,6 +1,10 @@
 extends Node2D
 class_name IMonstruo
 
+signal vertical_matched(center:bool,size:int)
+signal horizontal_matched(center:bool,size:int)
+signal special_matched(center:bool,type:MATCH_TYPES)
+
 enum MATCH_TYPES{None,Cross,L,Square}
 @onready var destroy_timer: Timer = $Destroy_Timer
 

@@ -80,11 +80,13 @@ func is_in_grid(grid_space:Vector2=Vector2(0,0)) -> bool:
 			return true
 	return false
 
+
+## Used for the initial board setup.
 func spawn_pieces_without_matches() -> void:
-	for i in width:
-		for j in height:
+	for row in width:
+		for column in height:
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2(i,j)):
+			if _is_obstacle(Vector2(row, column)):
 				continue
 
 			#choose random piece
@@ -92,18 +94,15 @@ func spawn_pieces_without_matches() -> void:
 			var piece = references[rand].instantiate()
 			#loop counter to prevent issues
 			var loops = 0
-			while(_is_match(i, j, piece.id) == true && loops < 100):
+			while(_is_match(row, column, piece.id) == true && loops < 100):
 				rand = randi() % references.size()
 				piece = references[rand].instantiate()
 				loops += 1
 			if loops ==100:
-				push_warning(str("limit at ",i,j))
+				push_warning(str("limit at ",row, column))
 
 			#instance it
-			add_child(piece)
-			piece._init(self)
-			piece.spawn(PosAdapter.board_to_pixel(i,j))
-			board[i][j] = piece
+			spawn_piece_to_board(piece,row,column)
 			await get_tree().create_timer(0.1).timeout
 
 
@@ -133,10 +132,18 @@ func _is_obstacle(place:Vector2=Vector2(0,0)) -> bool:
 
 
 ####################################################################################################
-#### MATCHING LOGIC
+#### GAME LOOP
 ####################################################################################################
 
-###find different types of matches
+func spawn_piece_to_board(piece:IMonstruo=null,row:int=0,column:int=0) -> void:
+	if piece:
+		add_child(piece)
+		piece._init(self)
+		piece.spawn(PosAdapter.board_to_pixel(row,column))
+		board[row][column] = piece
+
+
+#this could probably be abstracted a bit to make it less ugly, but it works so be it.
 func find_all_matches():
 	collapse_timer.stop()
 	var match_happened:=false
@@ -170,6 +177,8 @@ func find_all_matches():
 	else:
 		state = GRID_STATE.move
 
+#region H/V Find Match Logic
+## these two functions could be merged
 func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 	var pieces_to_match := _pieces_to_match
 	var match_happened := false
@@ -197,7 +206,7 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 				continue
 
 			##actual logic
-			var matched_pieces = []
+			var matched_pieces :Array[IMonstruo]= []
 			for num in pieces_to_match:
 				if board[i+num] ==null:
 					return match_happened
@@ -207,13 +216,15 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 				matched_pieces = []
 				continue
 			var middle_piece :int= matched_pieces.size()/2
-			print("Middle_piece indice ", middle_piece)
 			var center_position :Vector2= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
-			print("center at ",center_position)
 			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_h = true
 				piece.match_animation()
+				if piece == matched_pieces[middle_piece]:
+					matched_pieces[middle_piece].horizontal_matched.emit(true,pieces_to_match)
+				else:
+					matched_pieces[middle_piece].horizontal_matched.emit(false,pieces_to_match)
 			match pieces_to_match:
 				3:
 					emit_signal("match_of_3",center_position)
@@ -264,11 +275,17 @@ func find_vertical_match(_pieces_to_match:int=3) -> bool:
 			if match_results.matched == false:
 				matched_pieces = []
 				continue
-
+			var middle_piece :int= matched_pieces.size()/2
+			var center_position :Vector2= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
 			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_v = true
 				piece.match_animation()
+				if piece == matched_pieces[middle_piece]:
+					matched_pieces[middle_piece].vertical_matched.emit(true,pieces_to_match)
+				else:
+					matched_pieces[middle_piece].vertical_matched.emit(false,pieces_to_match)
+
 			match pieces_to_match:
 				3:
 					emit_signal("match_of_3",Vector2(i,j))
@@ -284,6 +301,7 @@ func find_vertical_match(_pieces_to_match:int=3) -> bool:
 					emit_signal("match_of_8",Vector2(i,j))
 			print(match_results.id, " V match of ", pieces_to_match, " at ", i, " ", j)
 	return match_happened
+#endregion
 
 ###checks if given array of pieces all have the same id
 func is_matching(array_pieces:Array=[]):
@@ -348,16 +366,15 @@ func refill_board():
 				activate_timer = true
 			var rand = randi() % references.size()
 			var piece :IMonstruo= references[rand].instantiate()
-			add_child(piece)
-			piece._init(self)
-			piece.spawn(PosAdapter.board_to_pixel(row,column))
-			board[row][column] = piece
+			spawn_piece_to_board(piece,row,column)
 			await get_tree().create_timer(0.1).timeout
 		await get_tree().create_timer(0.1).timeout
 	if activate_timer:
 		match_finder_timer.start()
 	else:
 		state = GRID_STATE.move
+
+
 
 
 #TODO
@@ -443,4 +460,5 @@ func _on_refill_timer_timeout() -> void:
 func _on_match_finder_timer_timeout() -> void:
 	print("Match Finder Timer Timeout")
 	find_all_matches()
+
 

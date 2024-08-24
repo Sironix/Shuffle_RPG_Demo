@@ -1,7 +1,7 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1724270165
+::res://::1724466615
 Credits.txt::TextFile::-1::1724166910::0::1::::<><>::
-default_env.tres::Environment::2152320522760436403::1724270322::0::1::::<><>::
+default_env.tres::Environment::2152320522760436403::1724346945::0::1::::<><>::
 global-plugin.png::CompressedTexture2D::1125350312895365774::1724163698::1724163699::1::::<><>::
 icon.png::CompressedTexture2D::3925916243578741476::1723507040::1723552234::1::::<><>::
 icon.svg::CompressedTexture2D::2735472317717612825::1724163698::1724163698::1::::<><>::
@@ -14,29 +14,31 @@ asset_panel.tscn::PackedScene::7533341145635504868::1724163698::0::1::::<><>::
 plugin.cfg::TextFile::-1::1724163698::0::1::::<><>::
 plugin.gd::GDScript::-1::1724163698::0::1::::<>EditorPlugin<>::
 ::res://addons/globalize-plugins/temp/::1724163856
-::res://addons/ScriptEditorQoL/::1724261022
-create_method_popup.gd::GDScript::-1::1724261022::0::1::::<>PopupPanel<>::
-create_method_popup.tscn::PackedScene::7958527179182503566::1724261022::0::1::::<><>::res://addons/ScriptEditorQoL/create_method_popup.gd
-GDScriptEditorQoL.gd::GDScript::-1::1724261022::0::1::::GDScriptQualityOfLife<>EditorPlugin<>::
-LICENSE.txt::TextFile::-1::1724261022::0::1::::<><>::
-plugin.cfg::TextFile::-1::1724261022::0::1::::<><>::
+::res://addons/ScriptEditorQoL/::1724466614
+create_method_popup.gd::GDScript::-1::1724466614::0::1::::<>PopupPanel<>::
+create_method_popup.tscn::PackedScene::7958527179182503566::1724466614::0::1::::<><>::res://addons/ScriptEditorQoL/create_method_popup.gd
+GDScriptEditorQoL.gd::GDScript::-1::1724466614::0::1::::GDScriptQualityOfLife<>EditorPlugin<>::
+LICENSE.txt::TextFile::-1::1724466614::0::1::::<><>::
+plugin.cfg::TextFile::-1::1724466614::0::1::::<><>::
 ::res://Autoloads/::1724269284
 Pos_Adapter.gd::GDScript::-1::1724269284::0::1::::<>Node<>::
-::res://Scenes/::1724270165
-Grid.gd::GDScript::-1::1724269833::0::1::::<>Node2D<>::
-IMonstruo.gd::GDScript::-1::1724268427::0::1::::IMonstruo<>Node2D<>::
-IMonstruo.tscn::PackedScene::621882271439826541::1724270165::0::1::::<><>::res://Scenes/IMonstruo.gd<>res://Scenes/Monstruos/Componentes/Moves/Normal_Move.gd<>res://Scenes/Monstruos/Componentes/Spawns/Spawn_Type.gd
-MainGame.tscn::PackedScene::4618510585165890253::1724270164::0::1::::<><>::res://Scenes/Grid.gd
+::res://Scenes/::1724346945
+Grid.gd::GDScript::-1::1724346769::0::1::::<>Node2D<>::
+IMonstruo.gd::GDScript::-1::1724346125::0::1::::IMonstruo<>Node2D<>::
+IMonstruo.tscn::PackedScene::621882271439826541::1724346575::0::1::::<><>::res://Scenes/IMonstruo.gd<>res://Scenes/Monstruos/Componentes/Moves/Normal_Move.gd<>res://Scenes/Monstruos/Componentes/Spawns/Spawn_Type.gd
+MainGame.tscn::PackedScene::4618510585165890253::1724346945::0::1::::<><>::res://Scenes/Grid.gd
 Match_helper.gd::GDScript::-1::1723552144::0::1::::<>Node<>::
-::res://Scenes/Monstruos/::1724270165
-Blue Piece.tscn::PackedScene::1546311240135645307::1724270322::0::1::::<><>::uid://dnldd2g5ck7q4::::res://Sprites/Blue Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IMonstruo.tscn<>res://Scenes/Monstruos/Componentes/Spawns/Ascend.gd
+::res://Scenes/Monstruos/::1724346575
+Blue Piece.tscn::PackedScene::1546311240135645307::1724346575::0::1::::<><>::uid://dnldd2g5ck7q4::::res://Sprites/Blue Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IMonstruo.tscn<>res://Scenes/Monstruos/Componentes/Spawns/Ascend.gd<>res://Scenes/Monstruos/Componentes/Destroys/Destroy_Type.gd
 Green Piece.tscn::PackedScene::824397283370919574::1724268500::0::1::::<><>::uid://cweo6pmdxaexb::::res://Sprites/Green Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IMonstruo.tscn
 Orange Piece.tscn::PackedScene::6253977884323902401::1724268609::0::1::::<><>::uid://lf20miyblx7a::::res://Sprites/Orange Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IMonstruo.tscn<>res://Scenes/Monstruos/Componentes/Moves/Cross_Explode.gd
 Pink Piece.tscn::PackedScene::-1::1723552144::0::1::::<><>::res://Sprites/Pink Piece.png<>res://Scenes/IMonstruo.tscn
 Yellow Piece.tscn::PackedScene::-1::1723552144::0::1::::<><>::res://Sprites/Yellow Piece.png<>res://Scenes/IMonstruo.tscn
-::res://Scenes/Monstruos/Componentes/::1724268858
-::res://Scenes/Monstruos/Componentes/Moves/::1724268609
-Cross_Explode.gd::GDScript::-1::1724268609::0::1::::<>Move_Type<>::
+::res://Scenes/Monstruos/Componentes/::1724270639
+::res://Scenes/Monstruos/Componentes/Destroys/::1724271766
+Destroy_Type.gd::GDScript::-1::1724271766::0::1::::Destroy_Type<>Resource<>::
+::res://Scenes/Monstruos/Componentes/Moves/::1724346945
+Cross_Explode.gd::GDScript::-1::1724346945::0::1::::<>Move_Type<>::
 Move_Type.gd::GDScript::-1::1724270322::0::1::::Move_Type<>Resource<>::
 Normal_Move.gd::GDScript::-1::1724267510::0::1::::<>Move_Type<>::
 ::res://Scenes/Monstruos/Componentes/Spawns/::1724270145
