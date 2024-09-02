@@ -1,16 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://b62igu6gabqd6"]
+[gd_scene load_steps=2 format=3 uid="uid://b62igu6gabqd6"]
 
 [ext_resource type="Script" path="res://Scenes/Grid.gd" id="1"]
-
-[sub_resource type="Gradient" id="1"]
-interpolation_mode = 2
-offsets = PackedFloat32Array(0.333333, 0.654321, 1)
-colors = PackedColorArray(0.105469, 0.0894012, 0.0894012, 1, 0.261719, 0.261719, 0.261719, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="2"]
-gradient = SubResource("1")
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(0, 0)
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -73,30 +63,6 @@ one_shot = true
 [node name="Control3" type="Control" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Control3"]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Control" type="Control" parent="VBoxContainer/Control3/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-size_flags_stretch_ratio = 0.25
-
-[node name="Control2" type="Control" parent="VBoxContainer/Control3/VBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/Control3/VBoxContainer/Control2"]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-texture = SubResource("2")
-expand_mode = 1
-stretch_mode = 2
 
 [connection signal="timeout" from="VBoxContainer/Control/Control/Grid/CollapseTimer" to="VBoxContainer/Control/Control/Grid" method="_on_collapse_timer_timeout"]
 [connection signal="timeout" from="VBoxContainer/Control/Control/Grid/RefillTimer" to="VBoxContainer/Control/Control/Grid" method="_on_refill_timer_timeout"]

@@ -1,15 +1,23 @@
 extends Node2D
-class_name IMonstruo
+class_name IPiece
 
 signal vertical_matched(center:bool,size:int)
 signal horizontal_matched(center:bool,size:int)
 signal special_matched(center:bool,type:MATCH_TYPES)
 
+##movement signals.
+signal moved
+signal displaced
+signal spawned
+signal matched
+signal collapsed
+signal destroyed
+
 enum MATCH_TYPES{None,Cross,L,Square}
 @onready var destroy_timer: Timer = $Destroy_Timer
 
 @export var id: String = "": get = id_get, set = id_set
-var damage : int = 0
+@export var damage : int = 0
 var icon
 var matched_h := false
 var matched_v := false
@@ -64,11 +72,6 @@ func _ready():
 	if _destroy_type:
 		destroy_type = _destroy_type.new(self)
 
-#I should make this an interface. like "Imove"
-#have the move version (triggers when you pick this piece and move it somewhere
-#have the displace version (triggers when this piece is the 2nd piece in a piece swap input
-#have the collapse version (triggers with the collapse columns function.
-
 func spawn(target_pos:Vector2=Vector2(0,0)) -> void:
 	if not target_pos:
 		push_error("Target position is null")
@@ -83,6 +86,7 @@ func displace(target_pos:Vector2=Vector2(0,0)) -> void:
 	if not target_pos:
 		push_error("Target position is null")
 	displace_type.move(target_pos)
+#maybe an await or something.
 
 func collapse(target_pos:Vector2=Vector2(0,0)) -> void:
 	if not target_pos:
@@ -98,8 +102,8 @@ func destroy(target_pos:Vector2=Vector2(0,0)) -> void:
 		push_error("Target position is null")
 	destroy_type.move(target_pos)
 
-func inflict_damage():
-	print(damage)
+func inflict_damage(_damage:int=damage):
+	print(_damage)
 	pass
 
 func check_connections():
@@ -119,6 +123,7 @@ func _on_destroy_timer_timeout() -> void:
 		destroy_type.destroy()
 	else:
 		queue_free()
+
 
 
 func match_3():

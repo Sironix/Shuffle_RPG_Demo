@@ -4,14 +4,14 @@ signal movement_started
 signal movement_finished
 
 ### Probably add a new var to move() to know if the movement should activate extra effects or not.
+var parent:IPiece
 
 var Name: String= "" :set = name_set
 func name_set(new_name: String) -> void:
 	Name = new_name
 
-var parent:IMonstruo
 
-func _init(parent_ref:IMonstruo) -> void:
+func _init(parent_ref:IPiece) -> void:
 	if parent_ref ==null:
 		push_error("Parent is Null")
 	parent = parent_ref

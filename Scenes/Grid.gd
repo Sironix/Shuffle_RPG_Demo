@@ -11,8 +11,16 @@ signal match_of_8(placement)
 signal player_piece_swap_finished
 
 #State Machine
-enum GRID_STATE {wait,move}
-var state:GRID_STATE=GRID_STATE.move
+signal grid_state_changed(state:GRID_STATE)
+
+enum GRID_STATE {busy,awaiting_input,spawning,matching,destroying,collapsing}
+var state:GRID_STATE=GRID_STATE.busy :set = _set_state
+
+func _set_state(value:GRID_STATE=GRID_STATE.busy):
+	if value != null:
+		state = value
+		grid_state_changed.emit(state)
+
 #init vars
 @export var width: int
 @export var height: int
@@ -49,17 +57,17 @@ var piece_selected :=false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	await get_tree().create_timer(5).timeout
+	await get_tree().create_timer(2.5).timeout
 	PosAdapter.x_start =x_start
 	PosAdapter.y_start =y_start
 	PosAdapter.offset = offset
 	board = create_board_array()
-	spawn_pieces_without_matches()
+	await spawn_pieces_without_matches()
 	player_piece_swap_finished.connect(when_piece_movement_finished)
-	state =GRID_STATE.move
+	state =GRID_STATE.awaiting_input
 
 func _process(delta: float) -> void:
-	if state== GRID_STATE.move:
+	if state== GRID_STATE.awaiting_input:
 		touch_input()
 
 ####################################################################################################
@@ -106,6 +114,7 @@ func spawn_pieces_without_matches() -> void:
 			await get_tree().create_timer(0.1).timeout
 
 
+
 ##quick 3 match finder for the spawning funcion
 func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 	var match_made = false
@@ -135,7 +144,7 @@ func _is_obstacle(place:Vector2=Vector2(0,0)) -> bool:
 #### GAME LOOP
 ####################################################################################################
 
-func spawn_piece_to_board(piece:IMonstruo=null,row:int=0,column:int=0) -> void:
+func spawn_piece_to_board(piece:IPiece=null,row:int=0,column:int=0) -> void:
 	if piece:
 		add_child(piece)
 		piece._init(self)
@@ -175,7 +184,7 @@ func find_all_matches():
 	if match_happened:
 		collapse_timer.start()
 	else:
-		state = GRID_STATE.move
+		state = GRID_STATE.awaiting_input
 
 #region H/V Find Match Logic
 ## these two functions could be merged
@@ -206,7 +215,7 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 				continue
 
 			##actual logic
-			var matched_pieces :Array[IMonstruo]= []
+			var matched_pieces :Array[IPiece]= []
 			for num in pieces_to_match:
 				if board[i+num] ==null:
 					return match_happened
@@ -345,9 +354,10 @@ func collapse_columns():
 				break
 		await get_tree().create_timer(0.02).timeout
 	if activate_timer:
+		state = GRID_STATE.spawning
 		refill_timer.start()
 	else:
-		state = GRID_STATE.move
+		state = GRID_STATE.awaiting_input
 
 func refill_board():
 	match_finder_timer.stop()
@@ -365,14 +375,15 @@ func refill_board():
 			if not activate_timer:
 				activate_timer = true
 			var rand = randi() % references.size()
-			var piece :IMonstruo= references[rand].instantiate()
+			var piece :IPiece= references[rand].instantiate()
 			spawn_piece_to_board(piece,row,column)
 			await get_tree().create_timer(0.1).timeout
 		await get_tree().create_timer(0.1).timeout
 	if activate_timer:
+		state = GRID_STATE.matching
 		match_finder_timer.start()
 	else:
-		state = GRID_STATE.move
+		state = GRID_STATE.awaiting_input
 
 
 
@@ -416,10 +427,10 @@ func touch_input() -> void:
 
 
 func swap_pieces(piece_1, piece_2) -> void:
-	state = GRID_STATE.wait
+	state = GRID_STATE.busy
 	control_allowed = false
-	var first_piece = board[piece_1.x][piece_1.y]
-	var second_piece = board[piece_2.x][piece_2.y]
+	var first_piece :IPiece= board[piece_1.x][piece_1.y]
+	var second_piece :IPiece= board[piece_2.x][piece_2.y]
 	var first_pos
 	var second_pos
 	if first_piece == null:
@@ -435,7 +446,7 @@ func swap_pieces(piece_1, piece_2) -> void:
 	board[piece_1.x][piece_1.y]= second_piece
 	board[piece_2.x][piece_2.y]= first_piece
 	first_piece.move(second_pos)
-	### DEBUG
+	state = GRID_STATE.matching
 	match_finder_timer.start()
 
 

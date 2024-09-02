@@ -5,7 +5,7 @@ func _ready() -> void:
 	name_set("Cross Explosion")
 	pass # Replace with function body.
 
-func _init(parent_ref:IMonstruo) -> void:
+func _init(parent_ref:IPiece) -> void:
 	super._init(parent_ref)
 	parent_ref.horizontal_matched.connect(extra_effect)
 

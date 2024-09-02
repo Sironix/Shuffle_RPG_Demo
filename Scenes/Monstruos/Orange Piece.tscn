@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cvdqdp7p86rxh"]
 
 [ext_resource type="Texture2D" uid="uid://lf20miyblx7a" path="res://Sprites/Orange Piece.png" id="1"]
-[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IMonstruo.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IPiece.tscn" id="2"]
 [ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Moves/Cross_Explode.gd" id="2_xhdvd"]
 
 [node name="Orange Piece" instance=ExtResource("2")]

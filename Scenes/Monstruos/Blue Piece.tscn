@@ -1,14 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://wbbrxmggj3ml"]
+[gd_scene load_steps=4 format=3 uid="uid://wbbrxmggj3ml"]
 
 [ext_resource type="Texture2D" uid="uid://dnldd2g5ck7q4" path="res://Sprites/Blue Piece.png" id="1"]
-[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IMonstruo.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IPiece.tscn" id="2"]
 [ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Spawns/Ascend.gd" id="2_efc5t"]
-[ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Destroys/Destroy_Type.gd" id="3_0t3rg"]
 
 [node name="Blue Piece" instance=ExtResource("2")]
 id = "Blue"
+damage = 55
 _spawn_type = ExtResource("2_efc5t")
-_destroy_type = ExtResource("3_0t3rg")
 
 [node name="Sprite2D" parent="." index="0"]
 texture = ExtResource("1")

@@ -1,6 +1,7 @@
+HBoxContainer
+Control
 Timer
 ColorRect
 Sprite2D
 Node2D
 TextureRect
-Control

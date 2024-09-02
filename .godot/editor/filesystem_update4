@@ -1,4 +1,5 @@
 res://default_env.tres
 res://Scenes/MainGame.tscn
-res://Scenes/Monstruos/Blue Piece.tscn
-res://Scenes/IMonstruo.tscn
+res://Scenes/IPiece.tscn
+res://Scenes/Monstruos/Green Piece.tscn
+res://Scenes/Monstruos/Pink Piece.tscn
