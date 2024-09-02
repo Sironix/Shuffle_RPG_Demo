@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://l0lx5pj4o2te"]
 
 [ext_resource type="Texture2D" uid="uid://cweo6pmdxaexb" path="res://Sprites/Green Piece.png" id="1"]
-[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IMonstruo.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IPiece.tscn" id="2"]
 
 [node name="Green Piece" instance=ExtResource("2")]
 id = "Green"

@@ -1,17 +1,5 @@
 res://default_env.tres
-res://Scenes/Monstruos/Blue Piece.tscn
-res://Moves/Normal_Move.gd
-res://Scenes/IMonstruo.gd
-res://Scenes/Monstruos/Green Piece.tscn
 res://Scenes/MainGame.tscn
-res://Scenes/IMonstruo.tscn
-res://Scenes/Monstruos/Orange Piece.tscn
-res://Moves/Move_Type.gd
-res://Scenes/Monstruos/Componentes/Moves/Cross_Explode.gd
-res://Scenes/Grid.gd
-res://Scenes/Monstruos/Componentes/Moves/Move_Type.gd
-res://Scenes/Monstruos/Componentes/Moves/Normal_Move.gd
-res://Scenes/Monstruos/Componentes/Spawns/Spawn_Type.gd
-res://Autoloads/Pos_Adapter.gd
-res://Scenes/Monstruos/Componentes/Spawns/Ascend.gd
-res://Scenes/Monstruos/Componentes/Destroys/Destroy_Type.gd
+res://Scenes/IPiece.tscn
+res://Scenes/Monstruos/Green Piece.tscn
+res://Scenes/Monstruos/Pink Piece.tscn

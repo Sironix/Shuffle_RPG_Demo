@@ -5,9 +5,9 @@ var Name: String= "" :set = name_set
 func name_set(new_name: String) -> void:
 	Name = new_name
 
-var parent:IMonstruo
+var parent:IPiece
 
-func _init(parent_ref:IMonstruo) -> void:
+func _init(parent_ref:IPiece) -> void:
 	if parent_ref ==null:
 		push_error("Parent is Null")
 	parent = parent_ref

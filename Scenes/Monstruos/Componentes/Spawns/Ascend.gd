@@ -4,7 +4,7 @@ func _ready() -> void:
 	name_set("Ascend Spawn")
 	pass # Replace with function body.
 
-func _init(parent_ref:IMonstruo) -> void:
+func _init(parent_ref:IPiece) -> void:
 	super._init(parent_ref)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

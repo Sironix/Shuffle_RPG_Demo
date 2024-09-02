@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource path="res://Sprites/Yellow Piece.png" type="Texture2D" id=1]
-[ext_resource path="res://Scenes/IMonstruo.tscn" type="PackedScene" id=2]
+[ext_resource type="Texture2D" uid="uid://4wrcgeim2ia" path="res://Sprites/Yellow Piece.png" id="1"]
+[ext_resource type="PackedScene" uid="uid://i4ikssh6kdjp" path="res://Scenes/IPiece.tscn" id="2"]
 
 [node name="Yellow Piece" instance=ExtResource( 2 )]
 id = "Yellow"
