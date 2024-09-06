@@ -25,6 +25,7 @@ var matched_special := false
 var matched_special_type = MATCH_TYPES.None
 var GRID_REF
 
+
 @export_category("movement")
 @export var _move_type:GDScript
 var move_type:Move_Type
@@ -51,6 +52,8 @@ func _init(_GRID_REF=null):
 	GRID_REF = _GRID_REF
 
 func _ready():
+	vertical_matched.connect(match_3)
+	horizontal_matched.connect(match_3)
 	if _move_type:
 		move_type = _move_type.new(self)
 
@@ -104,6 +107,7 @@ func destroy(target_pos:Vector2=Vector2(0,0)) -> void:
 
 func inflict_damage(_damage:int=damage):
 	print(_damage)
+	GRID_REF.attacked_the_enemy.emit(_damage)
 	pass
 
 func check_connections():
@@ -126,8 +130,11 @@ func _on_destroy_timer_timeout() -> void:
 
 
 
-func match_3():
-	pass
+
+func match_3(center:bool= false,amount:int=1):
+	if center:
+		inflict_damage(damage*amount)
+
 
 func match_4():
 	pass

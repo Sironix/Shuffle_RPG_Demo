@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnldd2g5ck7q4"
-path="res://.godot/imported/Blue Piece.png-7d6ff2d45fc0124f528018cd35dc8d9a.ctex"
+uid="uid://4wrcgeim2ia"
+path="res://.godot/imported/Yellow Piece.png-af4c1d2a38e61515dc6c3f7aa2ba5021.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Blue Piece.png"
-dest_files=["res://.godot/imported/Blue Piece.png-7d6ff2d45fc0124f528018cd35dc8d9a.ctex"]
+source_file="res://Sprites/Pieces/Yellow Piece.png"
+dest_files=["res://.godot/imported/Yellow Piece.png-af4c1d2a38e61515dc6c3f7aa2ba5021.ctex"]
 
 [params]
 

@@ -1,15 +1,16 @@
 extends Node2D
 
-signal match_of_3(placement)
-signal match_of_4(placement)
-signal match_of_5(placement)
-signal match_of_6(placement)
-signal match_of_7(placement)
-signal match_of_8(placement)
+signal match_of_3(placement:Vector2i)
+signal match_of_4(placement:Vector2i)
+signal match_of_5(placement:Vector2i)
+signal match_of_6(placement:Vector2i)
+signal match_of_7(placement:Vector2i)
+signal match_of_8(placement:Vector2i)
 
-
+signal player_turn_finished
 signal player_piece_swap_finished
 
+signal attacked_the_enemy(damage:int)
 #State Machine
 signal grid_state_changed(state:GRID_STATE)
 
@@ -20,8 +21,11 @@ func _set_state(value:GRID_STATE=GRID_STATE.busy):
 	if value != null:
 		state = value
 		grid_state_changed.emit(state)
+		if value == GRID_STATE.awaiting_input and initialized:
+			player_turn_finished.emit()
 
 #init vars
+@export_group("Grid Info")
 @export var width: int
 @export var height: int
 @export var x_start: int = 0
@@ -31,18 +35,20 @@ func _set_state(value:GRID_STATE=GRID_STATE.busy):
 @onready var collapse_timer: Timer = $CollapseTimer
 @onready var refill_timer: Timer = $RefillTimer
 @onready var match_finder_timer: Timer = $MatchFinderTimer
+var initialized :bool = false
 
 #posibles pieces currently being used
 var references=[
-	preload("res://Scenes/Monstruos/Blue Piece.tscn"),
-	preload("res://Scenes/Monstruos/Green Piece.tscn"),
-	preload("res://Scenes/Monstruos/Orange Piece.tscn"),
-	preload("res://Scenes/Monstruos/Pink Piece.tscn"),
-	preload("res://Scenes/Monstruos/Yellow Piece.tscn")
+	preload("res://Scenes/Pieces/Blue Piece.tscn"),
+	preload("res://Scenes/Pieces/Green Piece.tscn"),
+	preload("res://Scenes/Pieces/Orange Piece.tscn"),
+	preload("res://Scenes/Pieces/Pink Piece.tscn"),
+	preload("res://Scenes/Pieces/Yellow Piece.tscn")
 ]
 
 #obstacle stuff
-@export var empty_spaces:Array[Vector2]
+@export_group("Empty Spaces")
+@export var empty_spaces:Array[Vector2i]
 
 #current pieces in the scene
 var board := []
@@ -51,8 +57,8 @@ var matches_in_board:=[]
 
 #touch variables
 var control_allowed := true
-var touch_start := Vector2(-1,-1)
-var touch_release := Vector2(-1,-1)
+var touch_start := Vector2i(-1,-1)
+var touch_release := Vector2i(-1,-1)
 var piece_selected :=false
 
 # Called when the node enters the scene tree for the first time.
@@ -65,6 +71,7 @@ func _ready():
 	await spawn_pieces_without_matches()
 	player_piece_swap_finished.connect(when_piece_movement_finished)
 	state =GRID_STATE.awaiting_input
+	initialized = true
 
 func _process(delta: float) -> void:
 	if state== GRID_STATE.awaiting_input:
@@ -82,7 +89,7 @@ func create_board_array() -> Array:
 			array[i].append(null)
 	return array
 
-func is_in_grid(grid_space:Vector2=Vector2(0,0)) -> bool:
+func is_in_grid(grid_space:Vector2i=Vector2i(0,0)) -> bool:
 	if grid_space.x >=0 and grid_space.x < width:
 		if grid_space.y >=0 and grid_space.y < height:
 			return true
@@ -94,7 +101,7 @@ func spawn_pieces_without_matches() -> void:
 	for row in width:
 		for column in height:
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2(row, column)):
+			if _is_obstacle(Vector2i(row, column)):
 				continue
 
 			#choose random piece
@@ -132,8 +139,9 @@ func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 
 
 
-func _is_obstacle(place:Vector2=Vector2(0,0)) -> bool:
+func _is_obstacle(place:Vector2i=Vector2i(0,0)) -> bool:
 	for index in empty_spaces.size():
+		var obstacle : Vector2i = empty_spaces[index]
 		if empty_spaces[index] == place:
 			return true
 	return false
@@ -225,28 +233,29 @@ func find_horizontal_match(_pieces_to_match:int=3) -> bool:
 				matched_pieces = []
 				continue
 			var middle_piece :int= matched_pieces.size()/2
-			var center_position :Vector2= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
+			var center_position :Vector2i= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
 			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_h = true
 				piece.match_animation()
 				if piece == matched_pieces[middle_piece]:
 					matched_pieces[middle_piece].horizontal_matched.emit(true,pieces_to_match)
+
 				else:
 					matched_pieces[middle_piece].horizontal_matched.emit(false,pieces_to_match)
 			match pieces_to_match:
 				3:
 					emit_signal("match_of_3",center_position)
 				4:
-					emit_signal("match_of_4",Vector2(i,j))
+					emit_signal("match_of_4",Vector2i(i,j))
 				5:
-					emit_signal("match_of_5",Vector2(i,j))
+					emit_signal("match_of_5",Vector2i(i,j))
 				6:
-					emit_signal("match_of_6",Vector2(i,j))
+					emit_signal("match_of_6",Vector2i(i,j))
 				7:
-					emit_signal("match_of_7",Vector2(i,j))
+					emit_signal("match_of_7",Vector2i(i,j))
 				8:
-					emit_signal("match_of_8",Vector2(i,j))
+					emit_signal("match_of_8",Vector2i(i,j))
 
 			print(match_results.id, " H match of ", pieces_to_match, " at ", center_position.x, " ", center_position.y)
 	return match_happened
@@ -285,7 +294,7 @@ func find_vertical_match(_pieces_to_match:int=3) -> bool:
 				matched_pieces = []
 				continue
 			var middle_piece :int= matched_pieces.size()/2
-			var center_position :Vector2= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
+			var center_position :Vector2i= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
 			match_happened = true
 			for piece in matched_pieces:
 				piece.matched_v = true
@@ -297,17 +306,17 @@ func find_vertical_match(_pieces_to_match:int=3) -> bool:
 
 			match pieces_to_match:
 				3:
-					emit_signal("match_of_3",Vector2(i,j))
+					emit_signal("match_of_3",Vector2i(i,j))
 				4:
-					emit_signal("match_of_4",Vector2(i,j))
+					emit_signal("match_of_4",Vector2i(i,j))
 				5:
-					emit_signal("match_of_5",Vector2(i,j))
+					emit_signal("match_of_5",Vector2i(i,j))
 				6:
-					emit_signal("match_of_6",Vector2(i,j))
+					emit_signal("match_of_6",Vector2i(i,j))
 				7:
-					emit_signal("match_of_7",Vector2(i,j))
+					emit_signal("match_of_7",Vector2i(i,j))
 				8:
-					emit_signal("match_of_8",Vector2(i,j))
+					emit_signal("match_of_8",Vector2i(i,j))
 			print(match_results.id, " V match of ", pieces_to_match, " at ", i, " ", j)
 	return match_happened
 #endregion
@@ -335,7 +344,7 @@ func collapse_columns():
 				#skips the current for cycle
 				continue
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2(row,column)):
+			if _is_obstacle(Vector2i(row,column)):
 				continue
 
 			if not activate_timer:
@@ -349,10 +358,10 @@ func collapse_columns():
 				board[row][j].collapse(PosAdapter.board_to_pixel(row,column))
 				board[row][column]= board[row][j]
 				board[row][j]= null
-				await get_tree().create_timer(0.01).timeout
+				#await get_tree().create_timer(0.01).timeout
 				#once the first empty slot is dealed with, the loop breaks.
 				break
-		await get_tree().create_timer(0.02).timeout
+		#await get_tree().create_timer(0.02).timeout
 	if activate_timer:
 		state = GRID_STATE.spawning
 		refill_timer.start()
@@ -369,7 +378,7 @@ func refill_board():
 				continue
 
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2(row,column)):
+			if _is_obstacle(Vector2i(row,column)):
 				continue
 
 			if not activate_timer:
@@ -404,6 +413,8 @@ func touch_input() -> void:
 	if Input.is_action_just_pressed("ui_touch"):
 		var input_start_pos = get_local_mouse_position()
 		var grid_start_pos = PosAdapter.pixel_to_board(input_start_pos)
+		#print(touch_start,"  ",input_start_pos)
+
 		if  is_in_grid(grid_start_pos) == false:
 			return
 		if _is_obstacle(grid_start_pos):
@@ -414,11 +425,13 @@ func touch_input() -> void:
 	if Input.is_action_just_released("ui_touch") && piece_selected:
 		var input_end_pos = get_local_mouse_position()
 		var grid_end_pos = PosAdapter.pixel_to_board(input_end_pos)
+		#print(touch_release,"  ",input_end_pos)
 		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos or _is_obstacle(grid_end_pos):
 			piece_selected = false
-			touch_release = Vector2(-1,-2)
+			touch_release = Vector2i(-1,-1)
 			return
 		touch_release= grid_end_pos
+
 		##start the swapping
 		swap_pieces(touch_start,touch_release)
 		piece_selected = false

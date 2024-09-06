@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://dnd1tmx7kl03t"]
+
+[ext_resource type="Script" path="res://Scenes/Interfaces/Player.gd" id="1_amim1"]
+[ext_resource type="Script" path="res://Scenes/Components/HealthComponent.gd" id="2_h32mn"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_amim1")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(200, 2.08189e-12)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 50.0
+offset_right = 100.0
+offset_bottom = 77.0
+grow_horizontal = 2
+step = 1.0
+show_percentage = false
+script = ExtResource("2_h32mn")

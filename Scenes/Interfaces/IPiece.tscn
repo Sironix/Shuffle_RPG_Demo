@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://i4ikssh6kdjp"]
 
-[ext_resource type="Script" path="res://Scenes/IPiece.gd" id="1_da8ak"]
-[ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Moves/Normal_Move.gd" id="2_ak1m3"]
-[ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Spawns/Spawn_Type.gd" id="3_5cica"]
-[ext_resource type="Script" path="res://Scenes/Monstruos/Componentes/Destroys/Destroy_Type.gd" id="4_7xhe4"]
+[ext_resource type="Script" path="res://Scenes/Interfaces/IPiece.gd" id="1_da8ak"]
+[ext_resource type="Script" path="res://Scenes/Pieces/Componentes/Moves/Normal_Move.gd" id="2_ak1m3"]
+[ext_resource type="Script" path="res://Scenes/Pieces/Componentes/Spawns/Spawn_Type.gd" id="3_5cica"]
+[ext_resource type="Script" path="res://Scenes/Pieces/Componentes/Destroys/Destroy_Type.gd" id="4_7xhe4"]
 
 [node name="IPiece" type="Node2D"]
 script = ExtResource("1_da8ak")

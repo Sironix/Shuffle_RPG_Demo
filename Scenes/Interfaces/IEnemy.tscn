@@ -1,0 +1,67 @@
+[gd_scene load_steps=5 format=3 uid="uid://df5lit16fi6mu"]
+
+[ext_resource type="Script" path="res://Scenes/Interfaces/IEnemy.gd" id="1_6wspo"]
+[ext_resource type="Script" path="res://Scenes/Components/HealthComponent.gd" id="2_0c5wy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tmsep"]
+bg_color = Color(0.427451, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_left = 3.0
+expand_margin_top = 3.0
+expand_margin_right = 3.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yeen1"]
+bg_color = Color(0, 0.6, 0.188235, 1)
+border_width_right = 3
+border_color = Color(0.709804, 0, 0, 1)
+
+[node name="IEnemy" type="Node2D" node_paths=PackedStringArray("Attack_Cooldown_Label")]
+script = ExtResource("1_6wspo")
+Attack_Cooldown_Label = NodePath("Label")
+health = 100
+cooldown = 3
+cooldown_timer = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 100.0
+offset_right = 140.0
+offset_bottom = 23.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+text = "0"
+horizontal_alignment = 1
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(200, 2.08189e-12)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 45.0
+offset_right = 100.0
+offset_bottom = 72.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_tmsep")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yeen1")
+value = 75.0
+show_percentage = false
+
+[node name="Health Component" type="Node" parent="." node_paths=PackedStringArray("health_bar", "input_connection", "output_connection")]
+script = ExtResource("2_0c5wy")
+health_bar = NodePath("../HealthBar")
+input_connection = NodePath("..")
+output_connection = NodePath("..")

@@ -1,7 +1,10 @@
+Node
+ProgressBar
+Node2D
+Label
+Sprite2D
 HBoxContainer
 Control
 Timer
 ColorRect
-Sprite2D
-Node2D
 TextureRect
