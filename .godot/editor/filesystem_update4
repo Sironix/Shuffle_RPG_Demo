@@ -1,5 +1,11 @@
 res://default_env.tres
 res://Scenes/MainGame.tscn
-res://Scenes/IPiece.tscn
-res://Scenes/Monstruos/Green Piece.tscn
-res://Scenes/Monstruos/Pink Piece.tscn
+res://Autoloads/Board_Effects.gd
+res://Scenes/Pieces/Componentes/Moves/Cross_Explode.gd
+res://Scenes/Interfaces/IEnemy.tscn
+res://Scenes/Interfaces/Player.tscn
+res://Scenes/Pieces/Blue Piece.tscn
+res://Next.gd
+res://Scenes/Interfaces/IPiece.gd
+res://Autoloads/Pos_Adapter.gd
+res://Scenes/Grid.gd

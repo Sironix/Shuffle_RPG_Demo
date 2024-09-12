@@ -1,52 +1,90 @@
 ea4bc82a6ad023ab7ee23ee620429895
-::res://::1725307749
+::res://::1726151605
 Credits.txt::TextFile::-1::1724166910::0::1::::<><>::
-default_env.tres::Environment::2152320522760436403::1724967176::0::1::::<><>::
+default_env.tres::Environment::2152320522760436403::1725930266::0::1::::<><>::
 global-plugin.png::CompressedTexture2D::1125350312895365774::1724163698::1724163699::1::::<><>::
 icon.png::CompressedTexture2D::3925916243578741476::1723507040::1723552234::1::::<><>::
 icon.svg::CompressedTexture2D::2735472317717612825::1724163698::1724163698::1::::<><>::
+Next.gd::GDScript::-1::1725920094::0::1::::<>RefCounted<>::
 README.md::TextFile::-1::1724163752::0::1::::<><>::
-::res://addons/::1724163696
-::res://addons/globalize-plugins/::1724163698
+::res://addons/::1725885709
+::res://addons/globalize-plugins/::1725758564
 asset_item.tscn::PackedScene::5284120090852026542::1724163696::0::1::::<><>::uid://be8c3g2lr53td::::res://icon.svg
 asset_panel.gd::GDScript::-1::1724163697::0::1::::<>PopupPanel<>::
 asset_panel.tscn::PackedScene::7533341145635504868::1724163698::0::1::::<><>::
 plugin.cfg::TextFile::-1::1724163698::0::1::::<><>::
-plugin.gd::GDScript::-1::1724163698::0::1::::<>EditorPlugin<>::
+plugin.gd::GDScript::-1::1725758564::0::1::::<>EditorPlugin<>::
 ::res://addons/globalize-plugins/temp/::1724163856
-::res://addons/ScriptEditorQoL/::1725307749
-create_method_popup.gd::GDScript::-1::1725307748::0::1::::<>PopupPanel<>::
-create_method_popup.tscn::PackedScene::7958527179182503566::1725307748::0::1::::<><>::res://addons/ScriptEditorQoL/create_method_popup.gd
-GDScriptEditorQoL.gd::GDScript::-1::1725307748::0::1::::GDScriptQualityOfLife<>EditorPlugin<>::
-LICENSE.txt::TextFile::-1::1725307748::0::1::::<><>::
-plugin.cfg::TextFile::-1::1725307749::0::1::::<><>::
-::res://Autoloads/::1724269284
-Pos_Adapter.gd::GDScript::-1::1724269284::0::1::::<>Node<>::
-::res://Scenes/::1724967175
-Grid.gd::GDScript::-1::1724967024::0::1::::<>Node2D<>::
-IPiece.gd::GDScript::-1::1724967024::0::1::::IPiece<>Node2D<>::
-IPiece.tscn::PackedScene::621882271439826541::1724967175::0::1::::<><>::res://Scenes/IPiece.gd<>res://Scenes/Monstruos/Componentes/Moves/Normal_Move.gd<>res://Scenes/Monstruos/Componentes/Spawns/Spawn_Type.gd<>res://Scenes/Monstruos/Componentes/Destroys/Destroy_Type.gd
-MainGame.tscn::PackedScene::4618510585165890253::1724967174::0::1::::<><>::res://Scenes/Grid.gd
+::res://addons/ScriptEditorQoL/::1726151604
+create_method_popup.gd::GDScript::-1::1726151604::0::1::::<>PopupPanel<>::
+create_method_popup.tscn::PackedScene::7958527179182503566::1726151604::0::1::::<><>::res://addons/ScriptEditorQoL/create_method_popup.gd
+GDScriptEditorQoL.gd::GDScript::-1::1726151604::0::1::::GDScriptQualityOfLife<>EditorPlugin<>::
+LICENSE.txt::TextFile::-1::1726151604::0::1::::<><>::
+plugin.cfg::TextFile::-1::1726151604::0::1::::<><>::
+::res://addons/Todo_Manager/::1726151603
+ColourPicker.gd::GDScript::-1::1725885710::0::1::::<>HBoxContainer<>::
+Current.gd::GDScript::-1::1725885710::0::1::::<>Panel<>::
+Dock.gd::GDScript::-1::1725885711::0::1::::<>Control<>::
+Pattern.gd::GDScript::-1::1725885711::0::1::::<>HBoxContainer<>::
+plugin.cfg::TextFile::-1::1725885712::0::1::::<><>::
+plugin.gd::GDScript::-1::1725885712::0::1::::<>EditorPlugin<>::
+Project.gd::GDScript::-1::1725885711::0::1::::<>Panel<>::
+todo.cfg::TextFile::-1::1726151603::0::1::::<><>::
+todoItem_class.gd::GDScript::-1::1725885713::0::1::::<>RefCounted<>::
+todo_class.gd::GDScript::-1::1725885713::0::1::::<>RefCounted<>::
+::res://addons/Todo_Manager/doc/::1725885711
+::res://addons/Todo_Manager/doc/images/::1725885716
+example1.png::CompressedTexture2D::8063086250666186557::1725885712::1725885714::1::::<><>::
+example2.png::CompressedTexture2D::6674202109181030509::1725885712::1725885714::1::::<><>::
+Instruct1.png::CompressedTexture2D::727656937172188344::1725885711::1725885716::1::::<><>::
+Instruct2.png::CompressedTexture2D::4795690479109753778::1725885711::1725885715::1::::<><>::
+Instruct3.png::CompressedTexture2D::8019888695255251477::1725885711::1725885715::1::::<><>::
+Instruct4.png::CompressedTexture2D::9022674181544090665::1725885712::1725885716::1::::<><>::
+Instruct5.png::CompressedTexture2D::2740637296216489426::1725885712::1725885716::1::::<><>::
+TODO_Manager_Logo.png::CompressedTexture2D::6928817293045481036::1725885712::1725885716::1::::<><>::
+::res://addons/Todo_Manager/UI/::1725885711
+ColourPicker.tscn::PackedScene::2957809393656723737::1725885711::0::1::::<><>::res://addons/Todo_Manager/ColourPicker.gd
+Dock.tscn::PackedScene::4584442902745049483::1725885711::0::1::::<><>::res://addons/Todo_Manager/Dock.gd<>res://addons/Todo_Manager/Project.gd<>res://addons/Todo_Manager/Current.gd
+Pattern.tscn::PackedScene::4056048923411208166::1725885711::0::1::::<><>::res://addons/Todo_Manager/Pattern.gd
+::res://Autoloads/::1725929853
+Board_Effects.gd::GDScript::-1::1725928956::0::1::::<>Node<>::
+Event Bus.gd::GDScript::-1::1725758120::0::1::::<>Node<>::
+Pos_Adapter.gd::GDScript::-1::1725929853::0::1::::<>Node<>::
+::res://Scenes/::1725930266
+Grid.gd::GDScript::-1::1725928603::0::1::::<>Node2D<>::
+MainGame.gd::GDScript::-1::1725927922::0::1::::<>Control<>::
+MainGame.tscn::PackedScene::4618510585165890253::1725930266::0::1::::<><>::res://Scenes/Grid.gd<>uid://df5lit16fi6mu::::res://Scenes/Interfaces/IEnemy.tscn<>res://Scenes/MainGame.gd<>uid://dnd1tmx7kl03t::::res://Scenes/Interfaces/Player.tscn
 Match_helper.gd::GDScript::-1::1723552144::0::1::::<>Node<>::
-::res://Scenes/Monstruos/::1724967176
-Blue Piece.tscn::PackedScene::1546311240135645307::1724967089::0::1::::<><>::uid://dnldd2g5ck7q4::::res://Sprites/Blue Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IPiece.tscn<>res://Scenes/Monstruos/Componentes/Spawns/Ascend.gd
-Green Piece.tscn::PackedScene::824397283370919574::1724967176::0::1::::<><>::uid://cweo6pmdxaexb::::res://Sprites/Green Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IPiece.tscn
-Orange Piece.tscn::PackedScene::6253977884323902401::1724967089::0::1::::<><>::uid://lf20miyblx7a::::res://Sprites/Orange Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IPiece.tscn<>res://Scenes/Monstruos/Componentes/Moves/Cross_Explode.gd
-Pink Piece.tscn::PackedScene::8651586147500973229::1724967176::0::1::::<><>::uid://dcspo6b344sgn::::res://Sprites/Pink Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IPiece.tscn
-Yellow Piece.tscn::PackedScene::-1::1724967089::0::1::::<><>::uid://4wrcgeim2ia::::res://Sprites/Yellow Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/IPiece.tscn
-::res://Scenes/Monstruos/Componentes/::1724270639
-::res://Scenes/Monstruos/Componentes/Destroys/::1724967024
+::res://Scenes/Components/::1725758564
+HealthComponent.gd::GDScript::-1::1725758564::0::1::::Health_Component<>Node<>::
+Stats Component.gd::GDScript::-1::1725555240::0::1::::<>Node<>::
+::res://Scenes/Interfaces/::1725930089
+IEnemy.gd::GDScript::-1::1725758179::0::1::::IEnemy<>Node2D<>::
+IEnemy.tscn::PackedScene::7572820814687026712::1725930089::0::1::::<><>::res://Scenes/Interfaces/IEnemy.gd<>res://Scenes/Components/HealthComponent.gd
+IPiece.gd::GDScript::-1::1725930088::0::1::::IPiece<>Node2D<>::
+IPiece.tscn::PackedScene::621882271439826541::1725308610::0::1::::<><>::res://Scenes/Interfaces/IPiece.gd<>res://Scenes/Pieces/Componentes/Moves/Normal_Move.gd<>res://Scenes/Pieces/Componentes/Spawns/Spawn_Type.gd<>res://Scenes/Pieces/Componentes/Destroys/Destroy_Type.gd
+Player.gd::GDScript::-1::1725758795::0::1::::Player<>Node2D<>::
+Player.tscn::PackedScene::8079523390810487015::1725930089::0::1::::<><>::res://Scenes/Interfaces/Player.gd<>res://Scenes/Components/HealthComponent.gd
+::res://Scenes/Pieces/::1725930089
+Blue Piece.tscn::PackedScene::1546311240135645307::1725930089::0::1::::<><>::uid://dnldd2g5ck7q4::::res://Sprites/Pieces/Blue Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/Interfaces/IPiece.tscn<>res://Scenes/Pieces/Componentes/Spawns/Ascend.gd
+Green Piece.tscn::PackedScene::824397283370919574::1725308610::0::1::::<><>::uid://i4ikssh6kdjp::::res://Scenes/Interfaces/IPiece.tscn<>uid://cweo6pmdxaexb::::res://Sprites/Pieces/Green Piece.png
+Orange Piece.tscn::PackedScene::6253977884323902401::1725308610::0::1::::<><>::uid://lf20miyblx7a::::res://Sprites/Pieces/Orange Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/Interfaces/IPiece.tscn<>res://Scenes/Pieces/Componentes/Moves/Cross_Explode.gd
+Pink Piece.tscn::PackedScene::8651586147500973229::1725308610::0::1::::<><>::uid://i4ikssh6kdjp::::res://Scenes/Interfaces/IPiece.tscn<>uid://dcspo6b344sgn::::res://Sprites/Pieces/Pink Piece.png
+Yellow Piece.tscn::PackedScene::-1::1725308610::0::1::::<><>::uid://4wrcgeim2ia::::res://Sprites/Pieces/Yellow Piece.png<>uid://i4ikssh6kdjp::::res://Scenes/Interfaces/IPiece.tscn
+::res://Scenes/Pieces/Componentes/::1724270639
+::res://Scenes/Pieces/Componentes/Destroys/::1724967024
 Destroy_Type.gd::GDScript::-1::1724967024::0::1::::Destroy_Type<>Resource<>::
-::res://Scenes/Monstruos/Componentes/Moves/::1724967024
-Cross_Explode.gd::GDScript::-1::1724967024::0::1::::<>Move_Type<>::
+::res://Scenes/Pieces/Componentes/Moves/::1725930267
+Cross_Explode.gd::GDScript::-1::1725930267::0::1::::<>Move_Type<>::
 Move_Type.gd::GDScript::-1::1724967024::0::1::::Move_Type<>Resource<>::
 Normal_Move.gd::GDScript::-1::1724967024::0::1::::<>Move_Type<>::
-::res://Scenes/Monstruos/Componentes/Spawns/::1724967024
+::res://Scenes/Pieces/Componentes/Spawns/::1724967024
 Ascend.gd::GDScript::-1::1724967024::0::1::::<>Move_Type<>::
 Spawn_Type.gd::GDScript::-1::1724967024::0::1::::<>Move_Type<>::
-::res://Sprites/::1723552234
-Blue Piece.png::CompressedTexture2D::8094614110793842157::1723507040::1723552233::1::::<><>::
-Green Piece.png::CompressedTexture2D::6326159642503888495::1723507040::1723552233::1::::<><>::
-Orange Piece.png::CompressedTexture2D::784083816171855620::1723507040::1723552234::1::::<><>::
-Pink Piece.png::CompressedTexture2D::7337735925015374745::1723507040::1723552234::1::::<><>::
-Yellow Piece.png::CompressedTexture2D::61233201713441244::1723507040::1723552234::1::::<><>::
+::res://Sprites/::1725308214
+::res://Sprites/Pieces/::1725308217
+Blue Piece.png::CompressedTexture2D::8094614110793842157::1723507040::1725308217::1::::<><>::
+Green Piece.png::CompressedTexture2D::6326159642503888495::1723507040::1725308217::1::::<><>::
+Orange Piece.png::CompressedTexture2D::784083816171855620::1723507040::1725308217::1::::<><>::
+Pink Piece.png::CompressedTexture2D::7337735925015374745::1723507040::1725308217::1::::<><>::
+Yellow Piece.png::CompressedTexture2D::61233201713441244::1723507040::1725308217::1::::<><>::
