@@ -30,8 +30,8 @@ var turn_passed :int = 0
 @export var cooldown_timer: int =1
 @export var damage: int =0
 @export_subgroup("Variance")
-@export_range(-1,0,0.05) var dmg_var_min :float = 0
-@export_range(0,1,0.05) var dmg_var_max :float = 0
+@export_range(0,1,0.05) var dmg_var_min :float = 1
+@export_range(1,2,0.05) var dmg_var_max :float = 1
 
 
 
@@ -57,6 +57,7 @@ func activate_turn() -> void:
 
 func attack() -> void:
 	print("I'm attacking!")
+	EventBus.attacked_the_player.emit(damage)
 	cooldown_timer = cooldown
 	pass
 
@@ -66,7 +67,6 @@ func count_down_turn() -> void:
 
 func restart() -> void:
 	await get_tree().create_timer(0.5).timeout
-
 	cooldown_timer = cooldown
 	turn_passed = 0
 	enemy_restarted.emit()

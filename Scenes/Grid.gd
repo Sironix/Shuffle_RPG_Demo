@@ -17,12 +17,14 @@ signal grid_state_changed(state:GRID_STATE)
 enum GRID_STATE {busy,awaiting_input,spawning,matching,destroying,collapsing}
 var state:GRID_STATE=GRID_STATE.busy :set = _set_state
 
+
 func _set_state(value:GRID_STATE=GRID_STATE.busy):
 	if value != null:
 		state = value
 		grid_state_changed.emit(state)
 		if value == GRID_STATE.awaiting_input and initialized:
 			player_turn_finished.emit()
+
 
 #init vars
 @export_group("Grid Info")
@@ -80,6 +82,7 @@ func _process(delta: float) -> void:
 ####################################################################################################
 ####  INIT LOGIC
 ####################################################################################################
+#region Init
 
 func create_board_array() -> Array:
 	var array = []
@@ -146,12 +149,13 @@ func _is_obstacle(place:Vector2i=Vector2i(0,0)) -> bool:
 			return true
 	return false
 
+#endregion
 
 
 ####################################################################################################
 #### GAME LOOP
 ####################################################################################################
-
+#region Game Loop
 func spawn_piece_to_board(piece:IPiece=null,row:int=0,column:int=0) -> void:
 	if piece:
 		add_child(piece)
@@ -401,11 +405,28 @@ func refill_board():
 #mandar matches a un array o diccionario para guardarlos y computarlos.
 
 
+#endregion
+
+####################################################################################################
+#### HELPER FUNCTIONS
+####################################################################################################
+#region Helper Functions
+
+func get_cell_ref(position:Vector2i=Vector2i(-99,99)) -> IPiece:
+	if position == Vector2i(-99,99):
+		push_error("position is null")
+	if _is_obstacle(position):
+		return null
+	return board[position.x][position.y]
+
+
+#endregion
+
 
 ####################################################################################################
 #######    INPUT
 ####################################################################################################
-
+#region Input
 func touch_input() -> void:
 	if control_allowed == false:
 		return
@@ -437,8 +458,6 @@ func touch_input() -> void:
 		piece_selected = false
 
 
-
-
 func swap_pieces(piece_1, piece_2) -> void:
 	state = GRID_STATE.busy
 	control_allowed = false
@@ -467,9 +486,16 @@ func when_piece_movement_finished():
 	if not control_allowed:
 		control_allowed = true
 
+
+#endregion
+
+
 ####################################################################################################
 ###TIMERS
 ####################################################################################################
+#region Timers
+
+
 
 func _on_collapse_timer_timeout() -> void:
 	print("Collapse Timer Timeout")
@@ -486,3 +512,4 @@ func _on_match_finder_timer_timeout() -> void:
 	find_all_matches()
 
 
+#endregion

@@ -50,7 +50,7 @@ func initialize() -> void:
 
 
 func update_bar_value(value) -> void:
-	print(value)
+	print(value," Health Component line 53")
 	if health_bar:
 		health_bar.value = value
 

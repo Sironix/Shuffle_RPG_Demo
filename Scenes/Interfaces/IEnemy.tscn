@@ -30,6 +30,7 @@ Attack_Cooldown_Label = NodePath("Label")
 health = 100
 cooldown = 3
 cooldown_timer = 3
+damage = 25
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
