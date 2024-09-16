@@ -626,7 +626,7 @@ func add_multiline_vars(prefix: String, type: String, words: Array[PackedStringA
 			continue
 		insert_line_at( last_line.line+phrases, new_line)
 
-	set_caret.call_deferred(last_line.line+words.size()) # BUG
+	set_caret.call_deferred(last_line.line+words.size()) #
 
 
 ## Set caret at the end of given line (end is char 1000, hoping that no one will write a line this huge)

@@ -13,6 +13,7 @@ func _ready() -> void:
 	PosAdapter.grid_ref = Grid_Ref
 	PosAdapter.columns = Grid_Ref.width
 	PosAdapter.rows = Grid_Ref.height
+	MatchFinder.grid_ref = Grid_Ref
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

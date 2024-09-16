@@ -5,6 +5,7 @@
 #Next create basic status ailments (buffs, debuffs, curses, etc)
 #Next create global events for player reactions and enemy reactions (getting buffs/debuffs applied etc)
 #Next create a team node in which you can select different pieces, also change the way that the board is created so it uses these units instead.
+#Next Make the team nodes (equipments) being able to add multiple orbs to the board.
 #Next Make the attack add up to the team node icons and then release all the damage to the enemy when the turn ends. like in puzzles and dragons.
 #Next make it so the board refreshes when you change your units, make it cost a turn.
 #Next create on hover info for the team units

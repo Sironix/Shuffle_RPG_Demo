@@ -1,4 +1,5 @@
 extends Node2D
+class_name Grid
 
 signal match_of_3(placement:Vector2i)
 signal match_of_4(placement:Vector2i)
@@ -104,7 +105,7 @@ func spawn_pieces_without_matches() -> void:
 	for row in width:
 		for column in height:
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2i(row, column)):
+			if MatchFinder._is_obstacle(Vector2i(row, column)):
 				continue
 
 			#choose random piece
@@ -142,13 +143,6 @@ func _is_match(column:int=0,row:int=0,id:String="") -> bool:
 
 
 
-func _is_obstacle(place:Vector2i=Vector2i(0,0)) -> bool:
-	for index in empty_spaces.size():
-		var obstacle : Vector2i = empty_spaces[index]
-		if empty_spaces[index] == place:
-			return true
-	return false
-
 #endregion
 
 
@@ -168,29 +162,29 @@ func spawn_piece_to_board(piece:IPiece=null,row:int=0,column:int=0) -> void:
 func find_all_matches():
 	collapse_timer.stop()
 	var match_happened:=false
-	if find_horizontal_match(8):
+	if MatchFinder.find_horizontal_match(8):
 		match_happened=true
-	if find_vertical_match(8):
+	if MatchFinder.find_vertical_match(8):
 		match_happened=true
-	if find_horizontal_match(7):
+	if MatchFinder.find_horizontal_match(7):
 		match_happened=true
-	if find_vertical_match(7):
+	if MatchFinder.find_vertical_match(7):
 		match_happened=true
-	if find_horizontal_match(6):
+	if MatchFinder.find_horizontal_match(6):
 		match_happened=true
-	if find_vertical_match(6):
+	if MatchFinder.find_vertical_match(6):
 		match_happened=true
-	if find_horizontal_match(5):
+	if MatchFinder.find_horizontal_match(5):
 		match_happened=true
-	if find_vertical_match(5):
+	if MatchFinder.find_vertical_match(5):
 		match_happened=true
-	if find_horizontal_match(4):
+	if MatchFinder.find_horizontal_match(4):
 		match_happened=true
-	if find_vertical_match(4):
+	if MatchFinder.find_vertical_match(4):
 		match_happened=true
-	if find_horizontal_match(3):
+	if MatchFinder.find_horizontal_match(3):
 		match_happened=true
-	if find_vertical_match(3):
+	if MatchFinder.find_vertical_match(3):
 		match_happened=true
 
 	if match_happened:
@@ -198,146 +192,7 @@ func find_all_matches():
 	else:
 		state = GRID_STATE.awaiting_input
 
-#region H/V Find Match Logic
-## these two functions could be merged
-func find_horizontal_match(_pieces_to_match:int=3) -> bool:
-	var pieces_to_match := _pieces_to_match
-	var match_happened := false
-	if pieces_to_match > width:
-		push_error("trying to find matches bigger than the board.")
-		pieces_to_match= width
-	for i in width-(pieces_to_match-1):
-		for j in height:
-			##early return pattern
-			if board[i][j] == null:
 
-#				push_warning(str("pieza vacia",i,j))
-				continue
-
-			##piece already matched in a similar way so we skip it.
-			elif board[i][j].matched_h == true:
-#				push_warning(str("already matched H ",i,j))
-				continue
-
-			var null_pieces_in_match: bool = false
-			for k in pieces_to_match:
-				if board[i+k][j] == null:
-					null_pieces_in_match = true
-			if null_pieces_in_match:
-				continue
-
-			##actual logic
-			var matched_pieces :Array[IPiece]= []
-			for num in pieces_to_match:
-				if board[i+num] ==null:
-					return match_happened
-				matched_pieces.append(board[i+num][j])
-			var match_results :Dictionary= is_matching(matched_pieces)
-			if match_results.matched == false:
-				matched_pieces = []
-				continue
-			var middle_piece :int= matched_pieces.size()/2
-			var center_position :Vector2i= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
-			match_happened = true
-			for piece in matched_pieces:
-				piece.matched_h = true
-				piece.match_animation()
-				if piece == matched_pieces[middle_piece]:
-					matched_pieces[middle_piece].horizontal_matched.emit(true,pieces_to_match)
-
-				else:
-					matched_pieces[middle_piece].horizontal_matched.emit(false,pieces_to_match)
-			match pieces_to_match:
-				3:
-					emit_signal("match_of_3",center_position)
-				4:
-					emit_signal("match_of_4",Vector2i(i,j))
-				5:
-					emit_signal("match_of_5",Vector2i(i,j))
-				6:
-					emit_signal("match_of_6",Vector2i(i,j))
-				7:
-					emit_signal("match_of_7",Vector2i(i,j))
-				8:
-					emit_signal("match_of_8",Vector2i(i,j))
-
-			print(match_results.id, " H match of ", pieces_to_match, " at ", center_position.x, " ", center_position.y)
-	return match_happened
-
-func find_vertical_match(_pieces_to_match:int=3) -> bool:
-	var pieces_to_match := _pieces_to_match
-	var match_happened := false
-	if pieces_to_match > height:
-		push_error("trying to find matches bigger than the board.")
-		pieces_to_match= height
-	for i in width:
-		for j in height-(pieces_to_match-1):
-			##early return pattern
-			if board[i][j] == null:
-#				push_warning(str("pieza vacia",i,j))
-				continue
-
-			##piece already matched in a similar way so we skip it.
-			elif board[i][j].matched_v == true:
-#				push_warning(str("already matched H ",i,j))
-				continue
-
-			var null_pieces_in_match: bool = false
-			for k in pieces_to_match:
-				if board[i][j+k] == null:
-					null_pieces_in_match = true
-			if null_pieces_in_match:
-				continue
-
-			##actual logic
-			var matched_pieces = []
-			for num in pieces_to_match:
-				matched_pieces.append(board[i][j+num])
-			var match_results :Dictionary= is_matching(matched_pieces)
-			if match_results.matched == false:
-				matched_pieces = []
-				continue
-			var middle_piece :int= matched_pieces.size()/2
-			var center_position :Vector2i= PosAdapter.pixel_to_board(matched_pieces[middle_piece].position)
-			match_happened = true
-			for piece in matched_pieces:
-				piece.matched_v = true
-				piece.match_animation()
-				if piece == matched_pieces[middle_piece]:
-					matched_pieces[middle_piece].vertical_matched.emit(true,pieces_to_match)
-				else:
-					matched_pieces[middle_piece].vertical_matched.emit(false,pieces_to_match)
-
-			match pieces_to_match:
-				3:
-					emit_signal("match_of_3",Vector2i(i,j))
-				4:
-					emit_signal("match_of_4",Vector2i(i,j))
-				5:
-					emit_signal("match_of_5",Vector2i(i,j))
-				6:
-					emit_signal("match_of_6",Vector2i(i,j))
-				7:
-					emit_signal("match_of_7",Vector2i(i,j))
-				8:
-					emit_signal("match_of_8",Vector2i(i,j))
-			print(match_results.id, " V match of ", pieces_to_match, " at ", i, " ", j)
-	return match_happened
-#endregion
-
-###checks if given array of pieces all have the same id
-func is_matching(array_pieces:Array=[]):
-	var pieces_to_match = array_pieces
-	if pieces_to_match.size()== 0:
-		return false
-	var id = pieces_to_match[0].id
-	var matching =true
-	for piece in pieces_to_match.size():
-		if pieces_to_match[piece] == null:
-			return false
-		if pieces_to_match[piece].id != id:
-			matching = false
-	return {"matched":matching,"id":id}
 
 func collapse_columns():
 	refill_timer.stop()
@@ -348,7 +203,7 @@ func collapse_columns():
 				#skips the current for cycle
 				continue
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2i(row,column)):
+			if MatchFinder._is_obstacle(Vector2i(row,column)):
 				continue
 
 			if not activate_timer:
@@ -382,7 +237,7 @@ func refill_board():
 				continue
 
 			#if it is an obstacle, skip the current for loop
-			if _is_obstacle(Vector2i(row,column)):
+			if MatchFinder._is_obstacle(Vector2i(row,column)):
 				continue
 
 			if not activate_timer:
@@ -412,13 +267,6 @@ func refill_board():
 ####################################################################################################
 #region Helper Functions
 
-func get_cell_ref(position:Vector2i=Vector2i(-99,99)) -> IPiece:
-	if position == Vector2i(-99,99):
-		push_error("position is null")
-	if _is_obstacle(position):
-		return null
-	return board[position.x][position.y]
-
 
 #endregion
 
@@ -438,7 +286,7 @@ func touch_input() -> void:
 
 		if  is_in_grid(grid_start_pos) == false:
 			return
-		if _is_obstacle(grid_start_pos):
+		if MatchFinder._is_obstacle(grid_start_pos):
 			return
 		touch_start= grid_start_pos
 		piece_selected = true
@@ -447,7 +295,7 @@ func touch_input() -> void:
 		var input_end_pos = get_local_mouse_position()
 		var grid_end_pos = PosAdapter.pixel_to_board(input_end_pos)
 		#print(touch_release,"  ",input_end_pos)
-		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos or _is_obstacle(grid_end_pos):
+		if not is_in_grid(grid_end_pos) or touch_start == grid_end_pos or MatchFinder._is_obstacle(grid_end_pos):
 			piece_selected = false
 			touch_release = Vector2i(-1,-1)
 			return

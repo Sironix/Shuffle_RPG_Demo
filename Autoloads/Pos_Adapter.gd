@@ -27,5 +27,3 @@ func find_avaliable_cell(origin_point:Vector2i,movement_from_origin:Vector2i=Vec
 		return false
 	return final_position
 
-func get_cell_ref(position:Vector2i) -> IPiece:
-	return grid_ref.get_cell_ref(position)
