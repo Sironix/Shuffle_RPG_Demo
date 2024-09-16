@@ -11,6 +11,8 @@ func _ready() -> void:
 	Enemy_Holder_Ref.init(Grid_Ref)
 	Grid_Ref.attacked_the_enemy.connect(Enemy_Holder_Ref.take_damage)
 	PosAdapter.grid_ref = Grid_Ref
+	PosAdapter.columns = Grid_Ref.width
+	PosAdapter.rows = Grid_Ref.height
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

@@ -18,15 +18,14 @@ config/icon="res://icon.png"
 [autoload]
 
 PosAdapter="*res://Autoloads/Pos_Adapter.gd"
-EventBus="*res://Autoloads/Event Bus.gd"
+EventBus="*res://Autoloads/Event_Bus.gd"
 BoardEffects="*res://Autoloads/Board_Effects.gd"
+MatchFinder="*res://Autoloads/Match_Finder.gd"
 
 [display]
 
-window/size/viewport_width=576
-window/size/viewport_height=1024
-window/size/window_width_override=432
-window/size/window_height_override=768
+window/size/viewport_width=1024
+window/size/viewport_height=576
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_width"
 window/handheld/orientation="portrait"

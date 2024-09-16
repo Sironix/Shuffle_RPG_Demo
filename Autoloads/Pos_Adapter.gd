@@ -1,9 +1,11 @@
 extends Node
-
+var grid_ref
 var x_start: int = 0
 var y_start: int = 0
 var offset: int
-var grid_ref
+var columns:int
+var rows: int
+
 
 func board_to_pixel(column:int=0,row:int=0) -> Vector2i:
 	var new_x = x_start + offset * column
@@ -15,10 +17,6 @@ func pixel_to_board(pos:Vector2i=Vector2i(0,0)) -> Vector2i:
 	var row :int = round((pos.y - offset/2 )/ -offset)
 	var grid_space : Vector2i = Vector2i(column,row)
 	return grid_space
-
-#Fix hardcoded values for grid size should be imported from outside.
-var columns:int = 8
-var rows: int=8
 
 
 func find_avaliable_cell(origin_point:Vector2i,movement_from_origin:Vector2i=Vector2i(0,0)):

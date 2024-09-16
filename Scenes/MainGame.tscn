@@ -13,45 +13,27 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_73f2i")
-Grid_Ref = NodePath("VBoxContainer/Control/Control/Grid")
-Enemy_Holder_Ref = NodePath("VBoxContainer/Control2/IEnemy")
-player_ref = NodePath("VBoxContainer/Control3/Player")
+Grid_Ref = NodePath("Grid")
+Enemy_Holder_Ref = NodePath("IEnemy")
+player_ref = NodePath("Player")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="IEnemy" parent="." instance=ExtResource("1_5tcrv")]
+position = Vector2(524, 38)
 
-[node name="Control2" type="Control" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
+[node name="Player" parent="." instance=ExtResource("4_yxl2t")]
+position = Vector2(512, 468)
 
-[node name="IEnemy" parent="VBoxContainer/Control2" instance=ExtResource("1_5tcrv")]
-position = Vector2(299, 105)
-
-[node name="Control" type="Control" parent="VBoxContainer"]
-custom_minimum_size = Vector2(530, 530)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="Control" type="Control" parent="VBoxContainer/Control"]
-anchors_preset = 0
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_right = 576.0
-size_flags_horizontal = 5
-size_flags_vertical = 5
-
-[node name="Grid" type="Node2D" parent="VBoxContainer/Control/Control"]
-position = Vector2(64, -40)
+[node name="Grid" type="Node2D" parent="."]
+position = Vector2(403, 390)
+scale = Vector2(0.5, 0.5)
 script = ExtResource("1")
 width = 8
 height = 8
 offset = 64
 empty_spaces = Array[Vector2i]([Vector2i(0, 0), Vector2i(7, 0), Vector2i(0, 7), Vector2i(7, 7), Vector2i(3, 3), Vector2i(3, 4), Vector2i(4, 3), Vector2i(4, 4)])
+metadata/_edit_group_ = true
 
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer/Control/Control/Grid"]
+[node name="ColorRect" type="ColorRect" parent="Grid"]
 custom_minimum_size = Vector2(530, 530)
 offset_left = -42.0
 offset_top = -488.0
@@ -59,24 +41,17 @@ offset_right = 488.0
 offset_bottom = 42.0
 color = Color(0.239216, 0.239216, 0.239216, 1)
 
-[node name="CollapseTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+[node name="CollapseTimer" type="Timer" parent="Grid"]
 one_shot = true
 
-[node name="RefillTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+[node name="RefillTimer" type="Timer" parent="Grid"]
 wait_time = 0.05
 one_shot = true
 
-[node name="MatchFinderTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+[node name="MatchFinderTimer" type="Timer" parent="Grid"]
 wait_time = 0.55
 one_shot = true
 
-[node name="Control3" type="Control" parent="VBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Player" parent="VBoxContainer/Control3" instance=ExtResource("4_yxl2t")]
-position = Vector2(285, 128)
-
-[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/CollapseTimer" to="VBoxContainer/Control/Control/Grid" method="_on_collapse_timer_timeout"]
-[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/RefillTimer" to="VBoxContainer/Control/Control/Grid" method="_on_refill_timer_timeout"]
-[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/MatchFinderTimer" to="VBoxContainer/Control/Control/Grid" method="_on_match_finder_timer_timeout"]
+[connection signal="timeout" from="Grid/CollapseTimer" to="Grid" method="_on_collapse_timer_timeout"]
+[connection signal="timeout" from="Grid/RefillTimer" to="Grid" method="_on_refill_timer_timeout"]
+[connection signal="timeout" from="Grid/MatchFinderTimer" to="Grid" method="_on_match_finder_timer_timeout"]

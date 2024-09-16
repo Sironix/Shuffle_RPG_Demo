@@ -153,7 +153,7 @@ var updated_by_code: bool = false ## If the code was changed by code and not by 
 func _enter_tree() -> void:
 	last_line = LastLineChanged.new()
 	set_editor_settings()
-	# It looks like a different script calls a different CodeEdit, so we need to recall it every time you change the script 
+	# It looks like a different script calls a different CodeEdit, so we need to recall it every time you change the script
 	EditorInterface.get_script_editor().editor_script_changed.connect(get_editor_code_edit)
 
 
@@ -192,7 +192,7 @@ func set_editor_settings() -> void:
 	var path: String = EditorInterface.get_editor_paths().get_config_dir() # Godot settings path
 	path = "%s/%s" % [path, SAVE_FILE_NAME]
 	var err: Error = config.load(path) # Try to load, if any
-	
+
 	editor_setting = EditorInterface.get_editor_settings()
 	for s in settings.keys():
 		var value
@@ -202,7 +202,7 @@ func set_editor_settings() -> void:
 			value = settings[s] # if there isn't, use default values
 		editor_setting.set_setting(s, value)
 		editor_setting.set_initial_value(s, settings[s], false)
-	
+
 	create_method_shortcut = editor_setting.get_setting("gdscript_qol/create_method_shortcut")
 	update_line_shortcut = editor_setting.get_setting("gdscript_qol/update_line_shortcut")
 
@@ -213,12 +213,12 @@ func set_editor_settings() -> void:
 ## at path returned by [method EditorPaths.get_config_dir]
 func remove_editor_settings() -> void:
 	var config = ConfigFile.new() # To save the settings
-	
+
 	for s in settings.keys():
 		var value = editor_setting.get_setting(s) # Get setting
 		config.set_value("setting", s, value) # Prepare to save
 		editor_setting.erase(s) # Remove setting
-	
+
 	var path: String = EditorInterface.get_editor_paths().get_config_dir()
 	path = "%s/%s" % [path, SAVE_FILE_NAME]
 	config.save(path) # Save it
@@ -272,14 +272,14 @@ func changed_line(_from_line: int, _to_line: int) -> void:
 	if updated_by_code: # If new line was added by this same code, skip checkings
 		set_deferred("updated_by_code",  false)
 		return
-	
+
 	# It only does the logic if new line is inserted (ENTER pressed).
 	if _from_line < _to_line:
 		current_code.begin_complex_operation() # Treat everything as a single operation
 		check_line(_from_line, _to_line)
 		current_code.end_complex_operation.call_deferred()
 		return
-	
+
 	# If deleted line
 	if _to_line < _from_line and deleted_line_action_pressed():
 		remove_indent_on_delete.call_deferred(_to_line, _from_line)
@@ -294,7 +294,7 @@ func _shortcut_input(event: InputEvent) -> void:
 	if event.is_match(create_method_shortcut):
 		shortcut_detected(create_method)
 		return
-	
+
 	if event.is_match(update_line_shortcut):
 		shortcut_detected(update_line)
 		return
@@ -307,22 +307,22 @@ func _shortcut_input(event: InputEvent) -> void:
 func check_line(line: int, new_line: int) -> void:
 	# Store all line info (line number, text, indentation, first word)
 	last_line.set_line(line, new_line, current_code)
-	
+
 	if check_paste(): return
-	
+
 	# If there is nothing in the line, or it is a comment, return
 	if last_line.text.is_empty() or last_line.text.begins_with("#"): return
-	
+
 	if check_change_line_to(): return # Check if is in customizable user dictionary
-	
+
 	if last_line.text.strip_edges().ends_with(":"): return # Line is complete
-	
+
 	if check_first_word_endings(): return # Check if it matchs words ending with ++, --, !, ?, DEDENT_KEYWORDS or else/elif
-	
+
 	if check_call_method_if_not_null(): return # Check for class?.method()
-	
+
 	if check_call_def_set_def_keyword(): return # Check for call_deferred and set_deferred keyword at end
-	
+
 	# If there is a parentheses attached to first word, remove it
 	var first_word_without_p = last_line.first_word.substr(0,last_line.first_word.find("("))
 	match(first_word_without_p):
@@ -335,7 +335,7 @@ func check_line(line: int, new_line: int) -> void:
 		"match":
 			check_match()
 			return
-	
+
 	check_var() # If every check failed, check for var type
 
 
@@ -362,7 +362,7 @@ func check_change_line_to() -> bool:
 	var change_to: Dictionary = editor_setting.get_setting("gdscript_qol/change_to")
 	if not change_to.keys().has(last_line.text):
 		return false
-	
+
 	var new_line: String = last_line.indent + str(change_to[last_line.text])
 	current_code.set_line.call_deferred(last_line.line, new_line)
 	return true
@@ -387,16 +387,16 @@ func check_first_word_endings() -> bool:
 	if last_line.first_word.ends_with("--"):
 		change_double_sign("-")
 		return true
-	
+
 	if finish_if_statement(): return true
-	
+
 	if auto_retreat_else_or_elif(): return true
-	
+
 	if dedent_next_line(): return true
-	
+
 	if not last_line.first_word == last_line.text: # From here, the line must be only one word
 		return false
-	
+
 	if last_line.first_word.ends_with("!"):
 		invert_bool()
 		return true
@@ -410,7 +410,7 @@ func check_first_word_endings() -> bool:
 func check_call_method_if_not_null() -> bool:
 	if not "?." in last_line.first_word:
 		return false
-	
+
 	var idx = last_line.first_word.find("?.") # Get the position of "?."
 	var class_called: String = last_line.first_word.substr(0, idx) # The class name
 	var method_called: String = last_line.text.substr(idx+1) # The method name
@@ -419,16 +419,16 @@ func check_call_method_if_not_null() -> bool:
 	return true
 
 
-## It checks if the line ends with call_deferred or set_deferred keywords set at 
+## It checks if the line ends with call_deferred or set_deferred keywords set at
 ## [code]Editor -> Editor Settings -> GDScript QoL[/code]
 func check_call_def_set_def_keyword() -> bool:
 	# Get keywords
 	var call_def_key := editor_setting.get_setting("gdscript_qol/call_deferred_keyword")
 	var set_def_key := editor_setting.get_setting("gdscript_qol/set_deferred_keyword")
-	
+
 	var words: PackedStringArray = get_words(last_line.text)[0] # All words from first line
 	if not words: return false # Nothing in the line
-	
+
 	match(words[-1]): # Check last word
 		call_def_key:
 			return change_call_def(words)
@@ -451,25 +451,25 @@ func check_call_def_set_def_keyword() -> bool:
 ## The name of the [param private_var] can be changed at [code]Editor -> Editor Settings -> GDScript QoL[/code]
 func check_functions() -> void:
 	var words := get_words(last_line.text)[0] # Work only with the first phrase (no multi func declaration supported)
-	
+
 	var add_braces: String = ""
 	if not words[1].contains("("): # words[0] is always "func"
 		add_braces = "()"
 	elif not words[1].contains("()"): # If it is not closed, it has parameters
 		words[1] = adjust_func_parameter(words[1])
-	
+
 	var add_arrow = " -> "
 	if words.has("->"): words.remove_at(words.find("->")) # Easier to remove and add again the arrow
-	
+
 	var func_type = "void" # If nothing, return_type will be void
 	if is_in_type(words[-1]) or words[-1] == "void":
 		func_type = words[-1]
 		words.remove_at(words.size()-1) # If has return_type, remove it from list
-	
+
 	var new_line: String = " ".join(words)
 	new_line = last_line.indent + new_line + add_braces + add_arrow + func_type + ":"
 	current_code.set_line.call_deferred(last_line.line, new_line)
-	
+
 	add_func_return(func_type) # Add return line or pass if void
 
 
@@ -478,7 +478,7 @@ func check_functions() -> void:
 func add_await_timer() -> void:
 	var words := last_line.text.split(" ")
 	if words.size() != 2 or not words[1].is_valid_float(): return # Just continue if it is "await + number"
-	
+
 	var new_line = last_line.indent + "await get_tree().create_timer(%s).timeout" % words[1]
 	current_code.set_line.call_deferred(last_line.line, new_line)
 
@@ -493,13 +493,13 @@ func add_await_timer() -> void:
 ## This is a problem only for built-in classes. If you extended from another custom class, using
 ## a property enum from this will work fine.[br]
 ## One possible workaround is to create a method and pass the enum as parameter. This should
-## autocomplete normally.[br][br] 
+## autocomplete normally.[br][br]
 ## [b]ATTENTION:[/b][br]Enums declared in inner classes, when you use [code]class[/code]
-## keyword inside another class, are not supported for autocompletion. 
+## keyword inside another class, are not supported for autocompletion.
 func check_match() -> void:
 	var words := last_line.text.split(" ")
 	var item_matched: String # The name that goes inside ()
-	
+
 	if "(" in words[0]: # If there is only one word (the name is inside)
 		var begin: int = words[0].find("(")+1
 		var end: int = words[0].rfind(")")
@@ -507,16 +507,16 @@ func check_match() -> void:
 		item_matched = words[0].substr(begin, lenght)
 	elif words[1]: # If there is two words, the name is the second word
 		item_matched = words[1]
-	
+
 	if item_matched.is_empty(): return # No name found = return
-	
+
 	var new_line: String = last_line.indent + "match(%s):" % item_matched # new match line
 	var match_all_line: String = last_line.indent + "\t_:" # Last item (match rest)
 	var pass_line: String = last_line.indent + "\t\tpass" # pass line
 	current_code.set_line.call_deferred(last_line.line, new_line) # Set new match line
-	
+
 	var extra_lines: int = add_enum_list(item_matched, pass_line) # Autocomplete with enum list if any and return how many lines it was
-	
+
 	insert_line_at(last_line.line+extra_lines+1, match_all_line) # Last lines
 	current_code.set_line.call_deferred(last_line.line+extra_lines+2, pass_line)
 	set_caret(last_line.line+extra_lines+2) # Set caret at end
@@ -546,7 +546,7 @@ func check_var() -> void:
 	var prefix_indent: String = last_line.indent # Add the indent used
 	var words := get_words(last_line.text) # Make the line an array to make it easier to work
 	var type: String = ""
-	
+
 	if last_line.first_word.begins_with("@export") or last_line.first_word == "export": #Checks if it is @export
 		is_var = true
 		last_line.first_word = words[0][0] # Some export types has parentheses and spaces. This will keep everything inside parenthesis together with first word
@@ -554,18 +554,18 @@ func check_var() -> void:
 			last_line.first_word = "@export"
 		prefix_indent += "%s " % last_line.first_word
 		words[0].remove_at(0) # Remove export from array
-	
+
 	if words[0].is_empty(): return # Nothing else on the line
-	
+
 	if words[0][0] == "var": # If first word is "var"
 		is_var = true
 		words[0].remove_at(0) # Remove it from list
-	
+
 	if is_in_type(words[0][0]): # If first word is a type or build-in class
 		is_var = true
 		type = ": %s" % words[0][0] # Get type and remove it from array
 		words[0].remove_at(0)
-	
+
 	if not is_var: return
 	add_multiline_vars(prefix_indent, type, words) # Handle multiline vars
 #endregion
@@ -577,7 +577,7 @@ func check_var() -> void:
 func change_double_sign(sign: String):
 	var double_sign: String = sign.repeat(2)
 	var replace: String = sign + "="
-	
+
 	var words := last_line.text.split(" ")
 	var value_added: String
 	if words.size() == 1: # if there is no value, will add 1
@@ -585,7 +585,7 @@ func change_double_sign(sign: String):
 	elif words.size() == 2 and words[1].is_valid_float(): # there is a value, add it
 		value_added = " " + words[1]
 	else: return
-	
+
 	var new_line: String = last_line.indent + last_line.first_word.trim_suffix(double_sign) + " " + replace + value_added
 	current_code.set_line.call_deferred(last_line.line, new_line)
 
@@ -625,7 +625,7 @@ func add_multiline_vars(prefix: String, type: String, words: Array[PackedStringA
 			current_code.set_line.call_deferred(last_line.line, new_line)
 			continue
 		insert_line_at( last_line.line+phrases, new_line)
-	
+
 	set_caret.call_deferred(last_line.line+words.size()) # BUG
 
 
@@ -646,15 +646,15 @@ func is_in_type(type: String) -> bool:
 	for c in ProjectSettings.get_global_class_list(): # Get custom classes (from class_name)
 		if type == c.class:
 			return true
-	
+
 	if type.begins_with("Array[") and type.ends_with("]"): # Check if it is a typed array
 		var subtype: String = type.trim_prefix("Array[").trim_suffix("]")
 		return is_in_type(subtype) # Check if type from array is also valid
-	
+
 	# Check for enum types
 	if type in current_script.get_script_constant_map(): return true
 	if type in ClassDB.class_get_enum_list(current_script.get_instance_base_type()): return true
-	
+
 	return TYPES.has(type) or type_exists(type)
 
 
@@ -664,7 +664,7 @@ func is_in_type(type: String) -> bool:
 func get_words(text: String) -> Array[PackedStringArray]:
 	var temp_text: String = text
 	var inside_groups: Array[String] = get_inside_groups(temp_text) # Get what is inside "", '', (), [] or {}
-	
+
 	# Replace groups for a non spaced string to work with
 	# Can't use replace, or it will replace all occurrences and can break another group
 	for strings in inside_groups.size():
@@ -672,21 +672,21 @@ func get_words(text: String) -> Array[PackedStringArray]:
 		var left_text: String = temp_text.left(idx)
 		var right_text: String = temp_text.substr(idx + inside_groups[strings].length())
 		temp_text = "%s=GDS_QOL_inside_group_removed_%s=%s" % [left_text, str(strings), right_text]
-	
+
 	var phrases := temp_text.split(",", false) # Split after commas
 	var words: Array[PackedStringArray]
-	
+
 	for p in phrases.size():
 		if phrases[p].strip_edges().is_empty(): continue # Remove white space and skip if it was only it
 		words.append(phrases[p].split(" ", false)) # Split each word
-	
+
 	var idx = 0 # Now that we have divided into phrases and words, time to replace back the grouped strings
 	for p in words.size(): # Iterate through phrases
 		for w in words[p].size(): # Words
 			while(words[p][w].contains("=GDS_QOL_inside_group_removed_%s=" % str(idx))):
 				words[p][w] = words[p][w].replace("=GDS_QOL_inside_group_removed_%s=" % str(idx), inside_groups[idx])
 				idx += 1
-	
+
 	return words
 
 
@@ -694,13 +694,13 @@ func get_words(text: String) -> Array[PackedStringArray]:
 func get_inside_groups(text: String) -> Array[String]:
 	var grouped_index: Array[int] = get_grouped_indexes(text) # The index of where a group starts and ends
 	var inside_groups: Array[String]
-	
+
 	for i in range(0, grouped_index.size(), 2): # Iterate in steps of 2
 		var begin: int = grouped_index[i] # First number is the beginnig index
 		var lenght: int = grouped_index[i+1] - grouped_index[i] + 1 # Second is the ending index
 		var sub_string = text.substr(begin, lenght)
 		inside_groups.append(sub_string)
-	
+
 	return inside_groups
 
 
@@ -713,39 +713,39 @@ func get_grouped_indexes(text: String) -> Array[int]:
 	var closing_idx: int
 	var skip: int = 0
 	var indent: int = last_line.indent.count("\t")
-	
+
 	for c in text.length(): # Check every char of text
 		if current_code.is_in_comment(last_line.line, c+indent) != -1: # If it is in comment, will return other number
 			grouped_index.append(c)
 			grouped_index.append(text.length()-1)
 			break #No need to check comments, add the comment as a big group
 		if text[c-1] == "\\" and text[c-2] != "\\": continue # If there is a \ before, it is not starting nor finishing a group
-		
+
 		# If letter is inside string, will return an int bigger than -1
 		var in_string: bool = current_code.is_in_string(last_line.line, c+indent) != -1
-		
+
 		if grouped_index.size() % 2 == 0: # If it's even, it's an openning search
 			if checking_char_opening.contains(text[c]):
 				grouped_index.append(c)
 				closing_idx = checking_char_opening.find(text[c]) # Search only for the closing match
 			continue # Only loop next on closing search
-	
+
 		# If it is not searching for end of string...
 		if checking_char_closing[closing_idx] not in "\'\"":
 			if in_string: # ...and it's in a string, ignore
 				continue
 			if checking_char_opening[closing_idx] == text[c]: # ...and found another opening, skip next closing
 				skip += 1
-		
+
 		if checking_char_closing[closing_idx] == text[c]: # Found the closing char
 			if skip > 0: # If there is nested openings, search next closing char
 				skip -= 1
 				continue
 			grouped_index.append(c)
-	
+
 	if grouped_index.size() % 2 == 1: # If it is a odd result, some openning has no closing. Remove it
 		grouped_index.resize(grouped_index.size() - 1)
-	
+
 	return grouped_index
 
 
@@ -758,13 +758,13 @@ func adjust_func_parameter(param: String) -> String:
 	var inside_p: String = param.substr(begin_substr, end_substr - begin_substr)
 	var parameters := get_words(inside_p)
 	var new_parameters: PackedStringArray
-	
+
 	for p in parameters: # For every parameter
 		if is_in_type(p[0]) and p.size() > 1: # If it has declared type before name
 			p[0] = "%s: %s" % [p[1], p[0]] # Change first value to actual expression (name: type)
 			p.remove_at(1)
 		new_parameters.append(" ".join(p)) # If there is anything left, add it and save new parameter
-	
+
 	var final_p = param.left(begin_substr) + ", ".join(new_parameters) + param.substr(end_substr)
 	return final_p
 
@@ -799,43 +799,43 @@ func add_func_return(func_type: String, line: int = last_line.line) -> void:
 ## This is a problem only for built-in classes. If you extended from another custom class, using
 ## a property enum from this will work fine.[br]
 ## One possible workaround is to create a method and pass the enum as parameter. This should
-## autocomplete normally.[br][br] 
+## autocomplete normally.[br][br]
 func add_enum_list(item_matched: String, pass_line: String) -> int:
 	var extra_lines: int = 0
 	var type: String = is_var_enum_in_method(item_matched) # Check if type is declared inside a method or passed as parameter
-	
+
 	if not type: # If there is no type in method, get the type from script property list
 		var var_list: Array[Dictionary] = current_script.get_script_property_list()
 		var var_name = var_list.filter(func(i): return i.name == item_matched).pop_back()
 		if not var_name: return 0 # The variable does not exist or it is not an enum
 		type = var_name.class_name
-	
+
 	var const_name: String = type.substr(type.rfind(".")+1) # Get the type name, usually comes as CLASS_NAME.CONST_NAME
 	var class_n: String = type.trim_suffix("."+const_name) # Get the class name
-	
+
 	# Get the path of where enum dict is stored
 	var path: String = get_path_from_class_name(class_n)
-	
+
 	# If class_n is GDQOLdict, it is a custom name that indicates the variable is declared inside method
 	# If resource_path and path are the same, the enum is within the script constant map
 	# Get enum from internal script constant map
 	if class_n == "GDQOLdict" or current_script.resource_path == path:
 		var private_const_list: Dictionary = current_script.get_script_constant_map()
 		return insert_enum_dicts(private_const_list[const_name], const_name, pass_line)
-	
+
 	if not path: # No path found in custom classes
 		return add_enum_const_from_classdb(const_name, pass_line) # Try to find enum in Godot default classes
-	
+
 	# Finally get the dict enum from class
 	var class_temp = load(path)
 	var const_list = class_temp.get(const_name)
-	
+
 	if typeof(const_list) != TYPE_DICTIONARY: return 0 # Enums are dict, if it is not a dict, return
-	
+
 	# If the code extends the class that has the enum, no need to change to CLASS.ENUM
 	if not current_code.text.contains("extends %s" % class_n):
 		const_name = type
-	
+
 	return insert_enum_dicts(const_list, const_name, pass_line)
 
 
@@ -849,12 +849,12 @@ func add_enum_list(item_matched: String, pass_line: String) -> int:
 ## This is a problem only for built-in classes. If you extended from another custom class, using
 ## a property enum from this will work fine.[br]
 ## One possible workaround is to create a method and pass the enum as parameter. This should
-## autocomplete normally.[br][br] 
+## autocomplete normally.[br][br]
 func add_enum_const_from_classdb(const_name: String, pass_line: String) -> int:
 	var parent_class: StringName = current_script.get_instance_base_type() # Get the class this node is extended from
 	var const_db: PackedStringArray = ClassDB.class_get_enum_constants(parent_class, const_name)
 	if const_db.is_empty(): return 0 # Nothing found
-	
+
 	return insert_enum_keys(const_db, pass_line)
 
 
@@ -864,11 +864,11 @@ func add_enum_const_from_classdb(const_name: String, pass_line: String) -> int:
 func get_path_from_class_name(class_n: String) -> String:
 	if class_n.ends_with(".gd"): # If there is no class_name, Godot already returns its path
 		return class_n
-	
+
 	var classes: Array[Dictionary] = ProjectSettings.get_global_class_list()
 	var c = classes.filter(func(i): return i.class == class_n).pop_back()
 	if not c: return ""
-	
+
 	return c.path
 
 
@@ -901,18 +901,18 @@ func insert_enum_dicts(const_list: Dictionary,  const_name: String, pass_line: S
 ## If the enum derived from same class, a special keyword [code]GDQOLdict.[/code] may be returned as prefix.
 func is_var_enum_in_method(variant_name: String) -> String:
 	if last_line.indent == "": return "" # If there is no indentation, it is not inside function
-	
+
 	var func_name: String = ""
 	for i in range(last_line.line, 0, -1): # Check lines above until reach "func" keyword
 		var text: String = current_code.get_line(i).dedent()
 		if text.begins_with("func "): # Found function name, break the loop
 			func_name = text.substr(text.find(" ")+1, text.find("(") - text.find(" ")-1)
 			break
-		
+
 		# Found var name before find keyword "func", therefore, it is declared inside method
 		if text.begins_with("var %s " % variant_name) or text.begins_with("var %s:" % variant_name):
 			if ":" not in text: return "" # no type declared, impossible to know if it is enum or not
-			
+
 			var begin: int = text.find(":")+1
 			var end: int = text.find("=")
 			var lenght: int = end - begin if end > 0 else -1
@@ -922,13 +922,13 @@ func is_var_enum_in_method(variant_name: String) -> String:
 			if "." in type: # type comes from another class
 				return type
 			return "GDQOLdict."+type # Enum is from the class. Retun with custom keyword to know it later
-	
+
 	if func_name.is_empty(): return "" # Somehow, iterate all the code without finding "func"
-	
+
 	var methods = current_script.get_script_method_list() # Get script method list
 	var method_dic = methods.filter(func(i): return i.name == func_name).pop_back() # Get the func found
 	if not method_dic: return ""
-	
+
 	var arg_name = method_dic.args.filter(func(i): return i.name == variant_name).pop_back() # Check if variable is declared in parameters
 	if not arg_name: return ""
 	return arg_name.class_name
@@ -941,7 +941,7 @@ func indent_paste_block() -> void:
 	var indent_level: int = current_code.get_indent_level(last_line.line-1) / current_code.indent_size
 	# Adjust indent level based on line before ( : adds 1, DEDENT_KEYWORDS reduces 1)
 	indent_level += indent_difference_from_line_above(last_line.line-1)
-	
+
 	adjust_multiple_lines_indent(last_line.line, lines_pasted, indent_level)
 
 
@@ -950,24 +950,24 @@ func indent_paste_block() -> void:
 func adjust_multiple_lines_indent(first_line: int,  total_lines: int,  first_indent: int) -> void:
 	var new_text: String = "\t".repeat(first_indent) + current_code.get_line(first_line).dedent()
 	current_code.set_line.call_deferred(first_line, new_text)
-	
+
 	if total_lines < 1: return # If there is only 1 line, then it is done.
-	
+
 	# Adjust indent level based on line before ( : adds 1, DEDENT_KEYWORDS reduces 1)
 	first_indent += indent_difference_from_line_above(first_line)
 	var line_indent_level: int = current_code.get_indent_level(first_line+1) / current_code.indent_size
 	var difference_indents: int = line_indent_level - first_indent
 	if difference_indents == 0: return # If the indentation is what it's supposed to be, keep it
-	
+
 	# If not, let's correct each line
 	for l in total_lines:
 		new_text = current_code.get_line(first_line + l + 1) # It starts at second line
-		
+
 		if difference_indents > 0: # If it should have less indentation than it has
 			new_text = new_text.trim_prefix("\t".repeat(difference_indents))
 		else: # If it should have more
 			new_text = "\t".repeat(-difference_indents) + new_text
-		
+
 		current_code.set_line.call_deferred(first_line + l + 1, new_text)
 
 
@@ -987,7 +987,7 @@ func indent_difference_from_line_above(line: int) -> int:
 func get_uncommented_string(line: int) -> String:
 	var text: String = current_code.get_line(line)
 	if not "#" in text: return text # Yay, there's nothing to do
-	
+
 	var uncommented_text: String = text
 	var comment_index: int = 0
 	var has_comment: bool = false
@@ -996,7 +996,7 @@ func get_uncommented_string(line: int) -> String:
 		if (current_code as CodeEdit).is_in_comment(line, comment_index+1) != -1: # Make sure it is in fact a comment, e not inside a string
 			has_comment = true # found it, save comment_index var
 			break
-	
+
 	if has_comment:
 		uncommented_text = text.substr(0, comment_index)
 	return uncommented_text
@@ -1008,10 +1008,10 @@ func dedent_next_line() -> bool:
 	# You can disable this option from options if you want to.
 	if not editor_setting.get_setting("gdscript_qol/auto_dedent_after_return"): return false
 	if last_line.first_word not in DEDENT_KEYWORDS: return false
-	
+
 	var next_line_text = current_code.get_line(last_line.new_line)
 	if not next_line_text.strip_edges().is_empty(): return false # The line is not empty, keep it
-	
+
 	next_line_text = last_line.indent.trim_suffix("\t") # Remove one indent
 	current_code.set_line.call_deferred(last_line.new_line, next_line_text)
 	return true
@@ -1050,7 +1050,7 @@ func create_method() -> void:
 	if text.count(" ") == 0 and text.count(".") == 0 and text.count("\n") == 0: # Only single word selected
 		created_method(text, "", "void", "") # Create method named after single word selected
 		return
-	
+
 	var popup: Node = CREATE_METHOD_POPUP.instantiate()
 	popup.text = text # This will be passed with popup signal
 	popup.created_method.connect(created_method)
@@ -1065,14 +1065,14 @@ func created_method(method_name: String,  param: String,  return_type: String, t
 	DisplayServer.clipboard_set("%s(%s)" % [method_name, param]) # Overwrite clipboard to call the created method
 	current_code.paste() # Paste method callable where text is selected
 	DisplayServer.clipboard_set(last_clipboard_text) # Return the previous clipboard content
-	
+
 	var last_line_index: int = current_code.get_line_count() - 1 # Get code bottom
 	var last_line_text: String = current_code.get_line(last_line_index)
 	if not last_line_text.dedent().is_empty(): # If the last line is not empty, make it empty
 		insert_line_at(last_line_index, last_line_text) # The created line is placed above last line, so we must replace both
 		last_line_index += 1
 		current_code.set_line.call_deferred(last_line_index, "")
-	
+
 	var method_line: String = "\nfunc %s(%s) -> %s:" % [method_name, param, return_type]
 	insert_line_at(last_line_index, method_line)
 	if text:
@@ -1097,7 +1097,7 @@ func update_line() -> void:
 ## It will not work if there is a comment afte [code]if[/code] statement
 func finish_if_statement() -> bool:
 	if last_line.first_word != "if": return false
-	
+
 	var has_open_p: bool = false
 	for c in last_line.text.length(): # Search for ":" that is not in string or comment
 		var char_number: int = c + last_line.indent.count("\t")
@@ -1105,11 +1105,11 @@ func finish_if_statement() -> bool:
 		if current_code.is_in_comment(last_line.line, char_number) != -1: return false # If there is a comment, just ignore
 		if last_line.text[c] in "()": has_open_p = !has_open_p # check for open parenthesis (multiline if)
 		if last_line.text[c] == ":": return false # If there is any, return
-	
+
 	# Check if it is a multiline if
 	if last_line.text.strip_edges(false,true).ends_with("\\") or has_open_p:
 		return false
-	
+
 	var new_line = last_line.indent + last_line.text + ":" # Add :
 	current_code.set_line.call_deferred(last_line.line, new_line)
 	new_line = "\t" + current_code.get_line(last_line.line+1) # Add indentation under IF
@@ -1122,10 +1122,10 @@ func finish_if_statement() -> bool:
 func auto_retreat_else_or_elif() -> bool:
 	if last_line.first_word not in ["else", "elif"]: return false
 	var correct_indent_level: int = get_if_indent_level() # Find next if statement and return its indent
-	
+
 	var new_line: String = "\t".repeat(correct_indent_level) + last_line.text.strip_edges(false, true) + ":"
 	current_code.set_line.call_deferred(last_line.line, new_line) # correct the else line
-	
+
 	var next_line_indent: int = current_code.get_indent_level(last_line.line + 1) / current_code.indent_size
 	if next_line_indent != correct_indent_level + 1: # with the line under else is in wrong indentation, correct
 		next_line_indent = correct_indent_level + 1
@@ -1140,11 +1140,11 @@ func auto_retreat_else_or_elif() -> bool:
 func get_if_indent_level() -> int:
 	var current_indent: int = last_line.indent.count("\t")
 	var indent_line_over: int = current_code.get_indent_level(last_line.line-1) / current_code.indent_size
-	
+
 	for i in range(last_line.line, 0, -1): # Search for the if that has less indent
 		var indent_level: int = current_code.get_indent_level(i) / current_code.indent_size
 		if indent_level >= current_indent: continue # The indent is bigger than line
-		
+
 		var text: String = current_code.get_line(i)
 		var clean_text: String = text.strip_edges()
 		if clean_text.begins_with("func"): break # no IF found inside method, no need to keep searching
@@ -1163,7 +1163,7 @@ func change_call_def(words: PackedStringArray) -> bool:
 	if parenthesis_index.is_empty(): return false # No parenthesis found
 	var begin: int = parenthesis_index[-2] + 1
 	var end: int = parenthesis_index[-1]
-	
+
 	var params: String = words[-1].substr(begin, end - begin)
 	var func_name: String = words[-1].substr(0, begin-1)
 	words[-1] = "%s.call_deferred(%s)" % [func_name, params]
@@ -1184,17 +1184,17 @@ func change_set_def(words: PackedStringArray) -> bool:
 	for w in words.size(): # Get everything after = sign
 		if w <= 1: continue
 		value += " %s" % words[w]
-	
+
 	if value.is_empty(): # Nothing after = sign
 		return false
-	
+
 	var class_n: String = ""
 	var var_name: String = words[0]
 	var var_index: int = var_name.rfind(".") # Find if name before = sign has class declared together
 	if var_index > 0:
 		class_n = var_name.substr(0, var_index) + "."
 		var_name = var_name.substr(var_index + 1)
-	
+
 	var new_line = last_line.indent + "%sset_deferred(\"%s\",%s)" % [class_n, var_name, value]
 	current_code.set_line.call_deferred(last_line.line, new_line)
 	return true
@@ -1206,16 +1206,16 @@ func remove_indent_on_delete(_to_line: int, _from_line: int) -> void:
 	if not editor_setting.get_setting("gdscript_qol/auto_remove_indent_on_delete_line"):
 		return # it can be deactivated
 	last_line.set_line(_to_line, _from_line, current_code) # Set line info
-	
+
 	# If caret is before text, there will be indentation only until it, erasing everything after.
 	var caret_pos: int = current_code.get_caret_column()
 	if last_line.indent.count("\t") >= caret_pos:
 		last_line.indent = "\t".repeat(caret_pos)
-	
-	# last_line.text should not have \t (indentation) at beginning. 
+
+	# last_line.text should not have \t (indentation) at beginning.
 	# If it has any, it is in the middle of the line and should be removed.
 	var new_line = last_line.indent + last_line.text.replace("\t", "")
-	current_code.set_line.call_deferred(last_line.line, new_line) 
+	current_code.set_line.call_deferred(last_line.line, new_line)
 
 
 ## Calls [method TextEdit.insert_line_at] and signals the code that the new line
@@ -1233,7 +1233,7 @@ class LastLineChanged:
 	var line: int = 0 ## The number index of the last line edited from.
 	var new_line: int = 0 ## The number index of the new line edited to.
 	var indent: String = "" ## The indent from line returned as text [code]\t[/code].
-	
+
 	## Set all variables from class to be easy grabbable.
 	func set_line(line_edited: int, line_added: int, current_code: CodeEdit) -> void:
 		line = line_edited
