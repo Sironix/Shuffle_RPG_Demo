@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://dnd1tmx7kl03t"]
+
+[ext_resource type="Script" path="res://Scenes/Interfaces/Player.gd" id="1_amim1"]
+[ext_resource type="Script" path="res://Scenes/Components/HealthComponent.gd" id="2_h32mn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_msw2v"]
+bg_color = Color(0.427451, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_left = 3.0
+expand_margin_top = 3.0
+expand_margin_right = 3.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dempj"]
+bg_color = Color(0, 0.6, 0.188235, 1)
+border_width_right = 3
+border_color = Color(0.709804, 0, 0, 1)
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_amim1")
+health = 100
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+custom_minimum_size = Vector2(200, 2.08189e-12)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = 50.0
+offset_right = 100.0
+offset_bottom = 77.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_msw2v")
+theme_override_styles/fill = SubResource("StyleBoxFlat_dempj")
+step = 1.0
+value = 50.0
+show_percentage = false
+
+[node name="Node" type="Node" parent="." node_paths=PackedStringArray("health_bar", "input_connection", "output_connection")]
+script = ExtResource("2_h32mn")
+health_bar = NodePath("../ProgressBar")
+input_connection = NodePath("..")
+output_connection = NodePath("..")

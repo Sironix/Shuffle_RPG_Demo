@@ -25,7 +25,7 @@ func get_global_asset_paths():
 
 func globalize_local_plugins():
 	var settings := EditorInterface.get_editor_settings()
-	
+
 	# Add property hints to the EditorSettings, for file picking
 	var property_info = {
 		"name": editor_local_key,
@@ -36,34 +36,34 @@ func globalize_local_plugins():
 	settings.add_property_info(property_info)
 	if !settings.has_setting(editor_local_key):
 		settings.set_setting(editor_local_key, [])
-	
+
 	var paths: Array = settings.get_setting(editor_local_key)
 	var project_path := ProjectSettings.globalize_path("res://")
-	
+
 	paths = get_global_asset_paths() + paths
 	var plugin_folders_to_enable := []
-	
+
 	# Load plugins at paths
 	for path: String in paths:
 		# Don't copy folders that are nested under each other
 		if path.begins_with(project_path) or project_path.begins_with(path):
 			prints("skipped -", path)
 			continue
-		
+
 		var base_dir := path.get_base_dir()
 		var base_file := path.get_file()
-		
+
 		# Check if plugin.cfg file exists
 		if base_file != "plugin.cfg" or !FileAccess.file_exists(path):
 			push_warning("A plugin.cfg file wasn't found at path ", path, ". Recheck EditorSettings > GlobalPlugins > paths for invalid paths.")
 			continue
-		
+
 		var folder := base_dir.split("/", false)[-1]
 		var base_path := base_dir.trim_suffix("/" + folder)
-		
+
 		# Check if the plugin already exists in the project
 		var already_exists := FileAccess.file_exists("res://addons/" + folder + "/" + base_file)
-		
+
 		# Recursively copy the folder contents into this project
 		var dirs := [folder]
 		var i := 0
@@ -75,24 +75,24 @@ func globalize_local_plugins():
 			for file in DirAccess.get_files_at(cur_path):
 				DirAccess.copy_absolute(cur_path + '/' + file, local_path + '/' + file)
 			dirs.append_array( Array(DirAccess.get_directories_at(cur_path)).map(
-				func(d): return dir + '/' + d) 
+				func(d): return dir + '/' + d)
 			)
 			i += 1
-			
+
 			if !already_exists:
 				plugin_folders_to_enable.push_back(folder)
-		
+
 	# The FileSystem dock doesn't properly scan new files if scanned immediately
 	var rfs := EditorInterface.get_resource_filesystem()
 	await get_tree().process_frame
 	#print('scan 1')
 	rfs.scan()
-	
+
 	while rfs.is_scanning():
 		#print('waiting while scanning')
 		await get_tree().process_frame
 	await get_tree().process_frame
-	
+
 	for folder in plugin_folders_to_enable:
 		EditorInterface.set_plugin_enabled(folder, true)
 
@@ -103,7 +103,7 @@ func inject_globalize_button_assetlib():
 		if child.name.begins_with("@EditorAssetLibrary"):
 			asset_lib = child
 			asset_lib.child_entered_tree.connect(on_assetlib_child)
-			
+
 			var hbox: HBoxContainer = child.get_child(0, true).get_child(0, true)
 			globalize_popup_button = Button.new()
 			globalize_popup_button.text = "Globalize..."
@@ -122,7 +122,7 @@ func inject_globalize_button_assetlib():
 func on_assetlib_child(child: Node):
 	if child.name.begins_with("@EditorAssetLibraryItemDescription"):
 		await get_tree().process_frame
-		
+
 		var container: HBoxContainer = child.get_child(2, true)
 		if container:
 			# Insert Button
@@ -134,7 +134,7 @@ func on_assetlib_child(child: Node):
 			#asset_button.icon = globalize_icon
 			asset_button.add_theme_constant_override("icon_max_width", 24)
 			right_c.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			
+
 			# Locate plugin title
 			var plugin_title := ""
 			var info_container: Node = child.get_child(3, true #hbox
@@ -148,7 +148,7 @@ func on_assetlib_child(child: Node):
 				if title is LinkButton:
 					plugin_title = title.text
 					#prints(title.text, title.uri)
-			
+
 			var asset_panel: PopupPanel = asset_panel_scene.instantiate()
 			asset_panel.plugin = self
 			asset_panel.visible = false

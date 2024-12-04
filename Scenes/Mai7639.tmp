@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=3 uid="uid://b62igu6gabqd6"]
+
+[ext_resource type="Script" path="res://Scenes/Grid.gd" id="1"]
+[ext_resource type="Script" path="res://Scenes/Enemy.gd" id="1_wtw65"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Control2" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Enemy" type="Node2D" parent="VBoxContainer/Control2"]
+script = ExtResource("1_wtw65")
+
+[node name="Control" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(530, 530)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="VBoxContainer/Control"]
+anchors_preset = 0
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_right = 576.0
+size_flags_horizontal = 5
+size_flags_vertical = 5
+
+[node name="Grid" type="Node2D" parent="VBoxContainer/Control/Control"]
+position = Vector2(64, -40)
+script = ExtResource("1")
+width = 8
+height = 8
+offset = 64
+empty_spaces = Array[Vector2]([Vector2(0, 0), Vector2(7, 0), Vector2(0, 7), Vector2(7, 7), Vector2(3, 3), Vector2(3, 4), Vector2(4, 3), Vector2(4, 4)])
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer/Control/Control/Grid"]
+custom_minimum_size = Vector2(530, 530)
+offset_left = -42.0
+offset_top = -488.0
+offset_right = 488.0
+offset_bottom = 42.0
+color = Color(0.239216, 0.239216, 0.239216, 1)
+
+[node name="CollapseTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+one_shot = true
+
+[node name="RefillTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+wait_time = 0.05
+one_shot = true
+
+[node name="MatchFinderTimer" type="Timer" parent="VBoxContainer/Control/Control/Grid"]
+wait_time = 0.55
+one_shot = true
+
+[node name="Control3" type="Control" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/CollapseTimer" to="VBoxContainer/Control/Control/Grid" method="_on_collapse_timer_timeout"]
+[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/RefillTimer" to="VBoxContainer/Control/Control/Grid" method="_on_refill_timer_timeout"]
+[connection signal="timeout" from="VBoxContainer/Control/Control/Grid/MatchFinderTimer" to="VBoxContainer/Control/Control/Grid" method="_on_match_finder_timer_timeout"]
